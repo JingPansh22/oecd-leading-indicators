@@ -1,0 +1,25 @@
+# Ignore Python cache and temp files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore virtual environments
+venv/
+.env/
+
+# Ignore large data backups or archives
+archive.zip
+*.bak
+*.tmp
+
+# Optional: ignore large dataset exports or intermediate cleaned files
+data/**/*.parquet
+data/**/*.zip
