@@ -1,0 +1,269 @@
+<html>
+<head>
+<title>01_intro_and_dataset.ipynb</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #7a7e85;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+.ls0 { height: 1px; border-width: 0; color: #43454a; background-color:#43454a}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+01_intro_and_dataset.ipynb</font>
+</center></td></tr></table>
+<pre><span class="s0">#%% md 
+## 1. Overview 
+This notebook focuses on the **&lt;u&gt;OECD Composite Leading Indicators (CLI)&lt;/u&gt;** dataset exploration. 
+The goal is to understand the dataset’s structure, inspect key variables, and verify data quality before moving into deeper analysis. 
+ 
+We will: 
+1. **&lt;u&gt;Load&lt;/u&gt;** and preview the dataset. 
+2. Examine **&lt;u&gt;data types&lt;/u&gt;** and **&lt;u&gt;summary statistics&lt;/u&gt;**. 
+3. Identify **&lt;u&gt;missing values&lt;/u&gt;** or inconsistencies. 
+4. Perform an initial review to ensure the dataset is ready for **&lt;u&gt;trend analysis&lt;/u&gt;** in later notebooks. 
+ <hr class="ls0">#%% md 
+## 2. Load and Preview Dataset 
+In this section, we load the **&lt;u&gt;OECD CLI datasets&lt;/u&gt;** from the local directory and perform an initial preview. 
+ 
+Two data files are available: 
+- `MEI_20022020103548670.csv` 
+- `MEI_26032020094401290.csv` 
+ 
+Each file represents a snapshot of **&lt;u&gt;OECD Composite Leading Indicators&lt;/u&gt;** for multiple countries and time periods. 
+We will inspect their structure using **&lt;u&gt;Pandas&lt;/u&gt;**, review the first few rows, and confirm that the files were loaded correctly. <hr class="ls0">#%% 
+</span><span class="s1"># 2. Load and Preview Dataset</span>
+
+<span class="s2">import </span><span class="s0">pandas </span><span class="s2">as </span><span class="s0">pd</span>
+
+<span class="s1"># Define file paths (relative to this notebook)</span>
+<span class="s0">file1_path </span><span class="s3">= </span><span class="s4">&quot;../data/MEI_20022020103548670.csv&quot;</span>
+<span class="s0">file2_path </span><span class="s3">= </span><span class="s4">&quot;../data/MEI_26032020094401290.csv&quot;</span>
+
+<span class="s1"># Load datasets</span>
+<span class="s2">try</span><span class="s3">:</span>
+    <span class="s0">df1 </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">read_csv</span><span class="s3">(</span><span class="s0">file1_path</span><span class="s3">)</span>
+    <span class="s0">df2 </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">read_csv</span><span class="s3">(</span><span class="s0">file2_path</span><span class="s3">)</span>
+    <span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Files loaded successfully.&quot;</span><span class="s3">)</span>
+<span class="s2">except </span><span class="s0">FileNotFoundError </span><span class="s2">as </span><span class="s0">e</span><span class="s3">:</span>
+    <span class="s2">raise </span><span class="s0">FileNotFoundError</span><span class="s3">(</span><span class="s4">f&quot;Please check the paths. </span><span class="s2">{</span><span class="s0">e</span><span class="s2">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+
+<span class="s1"># Display shape and preview</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s2">\n</span><span class="s4">--- Dataset 1 ---&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Shape:&quot;</span><span class="s3">, </span><span class="s0">df1</span><span class="s3">.</span><span class="s0">shape</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">df1</span><span class="s3">.</span><span class="s0">head</span><span class="s3">())</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s2">\n</span><span class="s4">--- Dataset 2 ---&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Shape:&quot;</span><span class="s3">, </span><span class="s0">df2</span><span class="s3">.</span><span class="s0">shape</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">df2</span><span class="s3">.</span><span class="s0">head</span><span class="s3">())</span>
+<hr class="ls0"><span class="s0">#%% md 
+### **Observations** 
+ 
+- Both datasets were successfully loaded, each containing approximately **_38,000 rows_** and **_19 columns_**. 
+- Core columns such as **&lt;u&gt;LOCATION&lt;/u&gt;**, **&lt;u&gt;SUBJECT&lt;/u&gt;**, **&lt;u&gt;TIME&lt;/u&gt;**, and **&lt;u&gt;Value&lt;/u&gt;** appear consistently across both files. 
+- A **&lt;u&gt;DtypeWarning&lt;/u&gt;** was raised for columns **&lt;u&gt;17&lt;/u&gt;** and **&lt;u&gt;18&lt;/u&gt;**, indicating the presence of **&lt;u&gt;mixed data types&lt;/u&gt;** (e.g., numeric and string values). 
+- This warning does **&lt;u&gt;not affect successful loading&lt;/u&gt;** and will be resolved later through **&lt;u&gt;data cleaning&lt;/u&gt;** and **&lt;u&gt;type conversion&lt;/u&gt;**. 
+- Overall, both datasets are **&lt;u&gt;structurally compatible&lt;/u&gt;** and ready for subsequent **&lt;u&gt;quality checks&lt;/u&gt;** and **&lt;u&gt;merging operations&lt;/u&gt;**. 
+ 
+ <hr class="ls0">#%% md 
+## 3. Basic Information and Data Types 
+To understand the dataset structure, we use `info()` to display data types, and `describe()` to view summary statistics of numerical variables. 
+ 
+ <hr class="ls0">#%% 
+</span><span class="s1"># --- Basic Information ---</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;=== Dataset 1 Info ===&quot;</span><span class="s3">)</span>
+<span class="s0">df1</span><span class="s3">.</span><span class="s0">info</span><span class="s3">()</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s2">\n</span><span class="s4">=== Dataset 2 Info ===&quot;</span><span class="s3">)</span>
+<span class="s0">df2</span><span class="s3">.</span><span class="s0">info</span><span class="s3">()</span>
+
+<span class="s1"># --- Summary Statistics ---</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s2">\n</span><span class="s4">=== Summary Statistics for Dataset 1 ===&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">df1</span><span class="s3">.</span><span class="s0">describe</span><span class="s3">())</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s2">\n</span><span class="s4">=== Summary Statistics for Dataset 2 ===&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">df2</span><span class="s3">.</span><span class="s0">describe</span><span class="s3">())</span>
+
+<span class="s1"># --- Missing Value Check ---</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s2">\n</span><span class="s4">=== Missing Values in Dataset 1 ===&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">df1</span><span class="s3">.</span><span class="s0">isnull</span><span class="s3">().</span><span class="s0">sum</span><span class="s3">())</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s2">\n</span><span class="s4">=== Missing Values in Dataset 2 ===&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">df2</span><span class="s3">.</span><span class="s0">isnull</span><span class="s3">().</span><span class="s0">sum</span><span class="s3">())</span>
+<hr class="ls0"><span class="s0">#%% md 
+### **Observations** 
+ 
+- Both datasets share consistent structures with **&lt;u&gt;19 columns&lt;/u&gt;**, including **&lt;u&gt;LOCATION&lt;/u&gt;**, **&lt;u&gt;SUBJECT&lt;/u&gt;**, **&lt;u&gt;TIME&lt;/u&gt;**, and **&lt;u&gt;Value&lt;/u&gt;** as core analytical fields. 
+- Most columns are stored as **&lt;u&gt;object&lt;/u&gt;** type due to their categorical or mixed-format content (e.g., text codes, frequencies, or labels). 
+- The column **&lt;u&gt;Value&lt;/u&gt;** represents the **&lt;u&gt;Composite Leading Indicator (CLI)&lt;/u&gt;** value — a numerical index often centered around **100 (base year = 2015)**. 
+- The field **&lt;u&gt;TIME&lt;/u&gt;** encodes **&lt;u&gt;monthly periods&lt;/u&gt;** (e.g., `2019-M12` or `2019-12`), reflecting the time series nature of the dataset. 
+- A few columns (e.g., **&lt;u&gt;Reference Period Code&lt;/u&gt;**, **&lt;u&gt;Flags&lt;/u&gt;**) contain missing values, which will be examined in later steps during **&lt;u&gt;data cleaning&lt;/u&gt;**. 
+- Text fields describe **&lt;u&gt;geography&lt;/u&gt;**, **&lt;u&gt;indicator categories&lt;/u&gt;**, and **&lt;u&gt;measurement types&lt;/u&gt;**, forming the descriptive metadata that defines each observation. 
+ 
+ 
+ <hr class="ls0">#%% md 
+## 4. Missing Value Check 
+We now check for **&lt;u&gt;missing values&lt;/u&gt;** across all columns to ensure dataset completeness. 
+ <hr class="ls0">#%% 
+</span><span class="s1"># 4. Missing Value Check</span>
+
+<span class="s0">missing1 </span><span class="s3">= </span><span class="s0">df1</span><span class="s3">.</span><span class="s0">isna</span><span class="s3">().</span><span class="s0">sum</span><span class="s3">().</span><span class="s0">sort_values</span><span class="s3">(</span><span class="s0">ascending</span><span class="s3">=</span><span class="s2">False</span><span class="s3">)</span>
+<span class="s0">missing2 </span><span class="s3">= </span><span class="s0">df2</span><span class="s3">.</span><span class="s0">isna</span><span class="s3">().</span><span class="s0">sum</span><span class="s3">().</span><span class="s0">sort_values</span><span class="s3">(</span><span class="s0">ascending</span><span class="s3">=</span><span class="s2">False</span><span class="s3">)</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Missing Values in Dataset 1:</span><span class="s2">\n</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">missing1</span><span class="s3">.</span><span class="s0">to_frame</span><span class="s3">(</span><span class="s4">&quot;missing_count&quot;</span><span class="s3">))</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s2">\n</span><span class="s4">Missing Values in Dataset 2:</span><span class="s2">\n</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">missing2</span><span class="s3">.</span><span class="s0">to_frame</span><span class="s3">(</span><span class="s4">&quot;missing_count&quot;</span><span class="s3">))</span>
+<hr class="ls0"><span class="s0">#%% md 
+### **Observations** 
+ 
+- Both datasets exhibit **&lt;u&gt;consistent missing-value patterns&lt;/u&gt;**, primarily concentrated in **&lt;u&gt;Flags&lt;/u&gt;**, **&lt;u&gt;Flag Codes&lt;/u&gt;**, and **&lt;u&gt;Reference Period&lt;/u&gt;** fields. 
+- These columns serve as **&lt;u&gt;metadata&lt;/u&gt;** (e.g., quality flags, reporting periods) and are **&lt;u&gt;non-essential&lt;/u&gt;** for CLI trend analysis. 
+- Core analytical fields such as **&lt;u&gt;LOCATION&lt;/u&gt;**, **&lt;u&gt;TIME&lt;/u&gt;**, **&lt;u&gt;SUBJECT&lt;/u&gt;**, and **&lt;u&gt;Value&lt;/u&gt;** show **&lt;u&gt;no missing entries&lt;/u&gt;**, ensuring data integrity for time-series modeling. 
+- In subsequent notebooks, the missing values in auxiliary columns will be addressed via **&lt;u&gt;removal&lt;/u&gt;** or **&lt;u&gt;placeholder filling&lt;/u&gt;**, depending on analytical requirements. 
+ 
+ <hr class="ls0">#%% md 
+## 5. Combine and Clean Dataset 
+Since both files contain OECD CLI data with similar structure, we can combine them into a single DataFrame and remove duplicates for unified analysis. 
+ <hr class="ls0">#%% 
+</span><span class="s1"># 5. Combine and Clean Dataset</span>
+
+<span class="s1"># Concatenate and drop duplicate rows</span>
+<span class="s0">df_combined </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">concat</span><span class="s3">([</span><span class="s0">df1</span><span class="s3">, </span><span class="s0">df2</span><span class="s3">], </span><span class="s0">ignore_index</span><span class="s3">=</span><span class="s2">True</span><span class="s3">)</span>
+<span class="s0">before </span><span class="s3">= </span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">shape</span><span class="s3">[</span><span class="s5">0</span><span class="s3">]</span>
+<span class="s0">df_combined </span><span class="s3">= </span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">drop_duplicates</span><span class="s3">()</span>
+<span class="s0">after </span><span class="s3">= </span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">shape</span><span class="s3">[</span><span class="s5">0</span><span class="s3">]</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Combined dataset shape: </span><span class="s2">{</span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">shape</span><span class="s2">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Duplicates removed: </span><span class="s2">{</span><span class="s0">before </span><span class="s3">- </span><span class="s0">after</span><span class="s2">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+
+<span class="s1"># Standardize TIME to datetime if possible</span>
+<span class="s1"># Many OECD files encode time as &quot;YYYY-MM&quot; or &quot;YYYY-Mmm&quot;—try a robust parse:</span>
+<span class="s2">def </span><span class="s0">parse_time</span><span class="s3">(</span><span class="s0">s</span><span class="s3">):</span>
+    <span class="s2">try</span><span class="s3">:</span>
+        <span class="s2">return </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">to_datetime</span><span class="s3">(</span><span class="s0">s</span><span class="s3">, </span><span class="s0">errors</span><span class="s3">=</span><span class="s4">&quot;coerce&quot;</span><span class="s3">)</span>
+    <span class="s2">except </span><span class="s0">Exception</span><span class="s3">:</span>
+        <span class="s2">return </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">NaT</span>
+
+<span class="s2">if </span><span class="s4">&quot;TIME&quot; </span><span class="s2">in </span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">columns</span><span class="s3">:</span>
+    <span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;TIME_PARSED&quot;</span><span class="s3">] = </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">to_datetime</span><span class="s3">(</span><span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;TIME&quot;</span><span class="s3">], </span><span class="s0">errors</span><span class="s3">=</span><span class="s4">&quot;coerce&quot;</span><span class="s3">)</span>
+    <span class="s1"># Fallback if parsing failed widely</span>
+    <span class="s2">if </span><span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;TIME_PARSED&quot;</span><span class="s3">].</span><span class="s0">isna</span><span class="s3">().</span><span class="s0">mean</span><span class="s3">() &gt; </span><span class="s5">0.5</span><span class="s3">:</span>
+        <span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;TIME_PARSED&quot;</span><span class="s3">] = </span><span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;TIME&quot;</span><span class="s3">].</span><span class="s0">apply</span><span class="s3">(</span><span class="s0">parse_time</span><span class="s3">)</span>
+
+<span class="s0">display</span><span class="s3">(</span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">head</span><span class="s3">())</span>
+<hr class="ls0"><span class="s0">#%% md 
+### **Observations** 
+ 
+- Both OECD CSV files share identical schemas, allowing safe concatenation into a single combined dataset. 
+- After merging and de-duplication, we retain a **&lt;u&gt;unified dataset&lt;/u&gt;** representing all available CLI observations. 
+- The parsed time column (**&lt;u&gt;TIME_PARSED&lt;/u&gt;**) ensures compatibility for **&lt;u&gt;time-series visualization&lt;/u&gt;** and chronological analysis in later notebooks. 
+- This cleaned dataset will serve as the foundation for subsequent steps, where we will analyze **&lt;u&gt;country coverage&lt;/u&gt;** and **&lt;u&gt;temporal distribution&lt;/u&gt;**. 
+ 
+ <hr class="ls0">#%% md 
+## 6. Initial Observations 
+We explore the combined dataset to identify how many **&lt;u&gt;countries&lt;/u&gt;**, **&lt;u&gt;indicators&lt;/u&gt;**, and **&lt;u&gt;time points&lt;/u&gt;** are available. 
+ <hr class="ls0">#%% 
+</span><span class="s1"># 6. Initial Observations</span>
+
+<span class="s0">countries </span><span class="s3">= </span><span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;LOCATION&quot;</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">() </span><span class="s2">if </span><span class="s4">&quot;LOCATION&quot; </span><span class="s2">in </span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">columns </span><span class="s2">else None</span>
+<span class="s0">subjects </span><span class="s3">= </span><span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;SUBJECT&quot;</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">() </span><span class="s2">if </span><span class="s4">&quot;SUBJECT&quot; </span><span class="s2">in </span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">columns </span><span class="s2">else None</span>
+
+<span class="s1"># Time coverage: prefer TIME_PARSED if available</span>
+<span class="s2">if </span><span class="s4">&quot;TIME_PARSED&quot; </span><span class="s2">in </span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">columns</span><span class="s3">:</span>
+    <span class="s0">tmin </span><span class="s3">= </span><span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;TIME_PARSED&quot;</span><span class="s3">].</span><span class="s0">min</span><span class="s3">()</span>
+    <span class="s0">tmax </span><span class="s3">= </span><span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;TIME_PARSED&quot;</span><span class="s3">].</span><span class="s0">max</span><span class="s3">()</span>
+<span class="s2">else</span><span class="s3">:</span>
+    <span class="s0">tmin </span><span class="s3">= </span><span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;TIME&quot;</span><span class="s3">].</span><span class="s0">min</span><span class="s3">() </span><span class="s2">if </span><span class="s4">&quot;TIME&quot; </span><span class="s2">in </span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">columns </span><span class="s2">else None</span>
+    <span class="s0">tmax </span><span class="s3">= </span><span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;TIME&quot;</span><span class="s3">].</span><span class="s0">max</span><span class="s3">() </span><span class="s2">if </span><span class="s4">&quot;TIME&quot; </span><span class="s2">in </span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">columns </span><span class="s2">else None</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Number of countries: </span><span class="s2">{</span><span class="s0">countries</span><span class="s2">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Number of indicator subjects: </span><span class="s2">{</span><span class="s0">subjects</span><span class="s2">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Time range: </span><span class="s2">{</span><span class="s0">tmin</span><span class="s2">} </span><span class="s4">→ </span><span class="s2">{</span><span class="s0">tmax</span><span class="s2">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<hr class="ls0"><span class="s0">#%% md 
+### Observations 
+- The dataset contains multiple **&lt;u&gt;countries/regions&lt;/u&gt;** with CLI series over a broad **&lt;u&gt;time range&lt;/u&gt;**. 
+- This coverage is sufficient to study **&lt;u&gt;pre-/post-2020&lt;/u&gt;** trends and cross-country variation. 
+- Detailed **&lt;u&gt;field definitions&lt;/u&gt;** will be confirmed in the next notebook to avoid misinterpretation. 
+ <hr class="ls0">#%% md 
+## 7. Basic Visualization — Data Coverage by Country 
+To quickly understand dataset breadth, we visualize the number of **&lt;u&gt;CLI records&lt;/u&gt;** per **&lt;u&gt;country&lt;/u&gt;**. 
+This gives an immediate sense of coverage imbalance and helps select countries for **&lt;u&gt;trend analysis&lt;/u&gt;** in the next notebook. 
+ 
+ 
+ <hr class="ls0">#%% 
+</span><span class="s1"># 7. Basic Visualization -- Data Coverage by Country</span>
+
+<span class="s2">import </span><span class="s0">matplotlib</span><span class="s3">.</span><span class="s0">pyplot </span><span class="s2">as </span><span class="s0">plt</span>
+
+<span class="s1"># Safety check: ensure df_combined exists</span>
+<span class="s2">try</span><span class="s3">:</span>
+    <span class="s0">_ </span><span class="s3">= </span><span class="s0">df_combined</span>
+<span class="s2">except </span><span class="s0">NameError</span><span class="s3">:</span>
+    <span class="s2">raise </span><span class="s0">RuntimeError</span><span class="s3">(</span><span class="s4">&quot;df_combined is not defined. Please run Sections 2–5 first.&quot;</span><span class="s3">)</span>
+
+<span class="s0">country_counts </span><span class="s3">= </span><span class="s0">df_combined</span><span class="s3">[</span><span class="s4">&quot;LOCATION&quot;</span><span class="s3">].</span><span class="s0">value_counts</span><span class="s3">()</span>
+
+<span class="s1"># Plot top-15 countries by record count</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">10</span><span class="s3">, </span><span class="s5">5</span><span class="s3">))</span>
+<span class="s0">country_counts</span><span class="s3">.</span><span class="s0">head</span><span class="s3">(</span><span class="s5">15</span><span class="s3">).</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">kind</span><span class="s3">=</span><span class="s4">'bar'</span><span class="s3">, </span><span class="s0">color</span><span class="s3">=</span><span class="s4">'#4C72B0'</span><span class="s3">, </span><span class="s0">edgecolor</span><span class="s3">=</span><span class="s4">'black'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">title</span><span class="s3">(</span><span class="s4">&quot;Top 15 Countries by Number of CLI Records&quot;</span><span class="s3">, </span><span class="s0">fontsize</span><span class="s3">=</span><span class="s5">13</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">xlabel</span><span class="s3">(</span><span class="s4">&quot;Country Code&quot;</span><span class="s3">, </span><span class="s0">fontsize</span><span class="s3">=</span><span class="s5">11</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">ylabel</span><span class="s3">(</span><span class="s4">&quot;Number of Records&quot;</span><span class="s3">, </span><span class="s0">fontsize</span><span class="s3">=</span><span class="s5">11</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">xticks</span><span class="s3">(</span><span class="s0">rotation</span><span class="s3">=</span><span class="s5">45</span><span class="s3">, </span><span class="s0">ha</span><span class="s3">=</span><span class="s4">'right'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">(</span><span class="s0">axis</span><span class="s3">=</span><span class="s4">'y'</span><span class="s3">, </span><span class="s0">linestyle</span><span class="s3">=</span><span class="s4">'--'</span><span class="s3">, </span><span class="s0">alpha</span><span class="s3">=</span><span class="s5">0.7</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">tight_layout</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">show</span><span class="s3">()</span>
+<hr class="ls0"><span class="s0">#%% md 
+### **Observations** 
+ 
+- Countries with the **&lt;u&gt;highest record counts&lt;/u&gt;** (e.g., GRC, JPN, FRA, MEX) have **&lt;u&gt;stronger time coverage&lt;/u&gt;** and fewer reporting gaps. 
+- Countries with fewer records may have **&lt;u&gt;discontinued or incomplete CLI data&lt;/u&gt;**. 
+- This visualization provides an initial guide for selecting **&lt;u&gt;balanced countries&lt;/u&gt;** in subsequent **&lt;u&gt;trend analysis&lt;/u&gt;** notebooks. 
+ 
+ <hr class="ls0">#%% md 
+## 8. Save Cleaned Dataset 
+ 
+To avoid repeating the **&lt;u&gt;cleaning&lt;/u&gt;** and **&lt;u&gt;combining&lt;/u&gt;** process in later notebooks, 
+we save a **&lt;u&gt;consolidated dataset&lt;/u&gt;** for reuse and reproducibility. 
+ 
+ <hr class="ls0">#%% 
+</span><span class="s1"># 8. Save Cleaned Dataset</span>
+
+<span class="s0">output_path </span><span class="s3">= </span><span class="s4">&quot;../data/cleaned_oecd_cli.csv&quot;</span>
+<span class="s0">df_combined</span><span class="s3">.</span><span class="s0">to_csv</span><span class="s3">(</span><span class="s0">output_path</span><span class="s3">, </span><span class="s0">index</span><span class="s3">=</span><span class="s2">False</span><span class="s3">)</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Cleaned dataset saved to: </span><span class="s2">{</span><span class="s0">output_path</span><span class="s2">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Rows:&quot;</span><span class="s3">, </span><span class="s0">len</span><span class="s3">(</span><span class="s0">df_combined</span><span class="s3">))</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Columns:&quot;</span><span class="s3">, </span><span class="s0">len</span><span class="s3">(</span><span class="s0">df_combined</span><span class="s3">.</span><span class="s0">columns</span><span class="s3">))</span>
+<hr class="ls0"><span class="s0">#%% md 
+### **Notes** 
+ 
+- This file will be directly used in **&lt;u&gt;02_data_dictionary.ipynb&lt;/u&gt;** and **&lt;u&gt;03_cli_trends_analysis.ipynb&lt;/u&gt;**. 
+- If you later refine any **&lt;u&gt;data cleaning logic&lt;/u&gt;**, re-run this notebook to refresh the **&lt;u&gt;cleaned dataset&lt;/u&gt;**. 
+- Saving the combined dataset here ensures a **&lt;u&gt;reproducible analysis pipeline&lt;/u&gt;** for all subsequent steps. 
+ 
+ 
+ <hr class="ls0">#%% md 
+## 9. Summary and Transition 
+ 
+- The OECD CLI data were **&lt;u&gt;loaded&lt;/u&gt;**, **&lt;u&gt;validated&lt;/u&gt;**, **&lt;u&gt;combined&lt;/u&gt;**, and **&lt;u&gt;profiled&lt;/u&gt;** successfully. 
+- We performed a **&lt;u&gt;coverage visualization&lt;/u&gt;** to understand country-level record distribution. 
+- A consolidated dataset (**&lt;u&gt;cleaned_oecd_cli.csv&lt;/u&gt;**) has been exported for downstream notebooks. 
+ 
+--- 
+ 
+### **Next Steps:** 
+ 
+1. Build a concise **&lt;u&gt;data dictionary&lt;/u&gt;** for key fields (`LOCATION`, `SUBJECT`, `MEASURE`, `TIME`, `Value`). 
+2. Proceed to **&lt;u&gt;03_cli_trends_analysis.ipynb&lt;/u&gt;** to visualize **&lt;u&gt;pre-/post-2020&lt;/u&gt;** trends by country. 
+3. Prepare inputs for **&lt;u&gt;correlation&lt;/u&gt;** exploration with macroeconomic indicators in later notebooks. 
+</span></pre>
+</body>
+</html>

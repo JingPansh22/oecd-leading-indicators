@@ -1,0 +1,189 @@
+<html>
+<head>
+<title>02_data_dictionary.ipynb</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #cf8e6d;}
+.s2 { color: #7a7e85;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+.ls0 { height: 1px; border-width: 0; color: #43454a; background-color:#43454a}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+02_data_dictionary.ipynb</font>
+</center></td></tr></table>
+<pre><span class="s0">#%% md 
+# 02 - Data Dictionary <hr class="ls0">#%% md 
+</span>
+
+<span class="s0">## 1. Purpose 
+ 
+In this notebook, we build a **&lt;u&gt;data dictionary&lt;/u&gt;** for the cleaned **&lt;u&gt;OECD Composite Leading Indicators (CLI)&lt;/u&gt;** dataset. 
+The purpose of this step is to **&lt;u&gt;document each field’s meaning, type, and structure&lt;/u&gt;** to ensure a clear understanding before performing **&lt;u&gt;trend&lt;/u&gt;** and **&lt;u&gt;correlation analysis&lt;/u&gt;**. 
+ 
+Creating a **&lt;u&gt;data dictionary&lt;/u&gt;** helps: 
+- Improve **&lt;u&gt;data transparency&lt;/u&gt;** for all collaborators. 
+- Ensure **&lt;u&gt;consistency&lt;/u&gt;** across analysis notebooks. 
+- Clarify how key variables such as **&lt;u&gt;LOCATION&lt;/u&gt;**, **&lt;u&gt;SUBJECT&lt;/u&gt;**, and **&lt;u&gt;TIME&lt;/u&gt;** interact to define each record. 
+ 
+ <hr class="ls0">#%% md 
+## 2. Load Cleaned Dataset 
+ 
+In this step, we load the **&lt;u&gt;cleaned OECD CLI dataset&lt;/u&gt;** created in the previous notebook. 
+This dataset combines and cleans both original files — ensuring no duplicates and consistent column names. 
+ 
+We will: 
+1. Load the file into a **&lt;u&gt;Pandas DataFrame&lt;/u&gt;**. 
+2. Preview the first few rows to verify the structure. 
+3. Confirm that field names and data types match expectations. 
+ <hr class="ls0">#%% 
+</span><span class="s1">import </span><span class="s0">pandas </span><span class="s1">as </span><span class="s0">pd</span>
+
+<span class="s2"># Load cleaned dataset</span>
+<span class="s0">file_path </span><span class="s3">= </span><span class="s4">&quot;../data/cleaned_oecd_cli.csv&quot;</span>
+<span class="s0">df </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">read_csv</span><span class="s3">(</span><span class="s0">file_path</span><span class="s3">)</span>
+
+<span class="s2"># Display basic preview</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Dataset loaded successfully!&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Number of rows: </span><span class="s1">{</span><span class="s0">df</span><span class="s3">.</span><span class="s0">shape</span><span class="s3">[</span><span class="s5">0</span><span class="s3">]</span><span class="s1">}</span><span class="s4">, Number of columns: </span><span class="s1">{</span><span class="s0">df</span><span class="s3">.</span><span class="s0">shape</span><span class="s3">[</span><span class="s5">1</span><span class="s3">]</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">df</span><span class="s3">.</span><span class="s0">head</span><span class="s3">()</span>
+<hr class="ls0"><span class="s0">#%% md 
+--- 
+### Observations 
+ 
+- The **&lt;u&gt;cleaned dataset&lt;/u&gt;** was successfully loaded, containing approximately **&lt;u&gt;38,000 rows&lt;/u&gt;** and **&lt;u&gt;20 columns&lt;/u&gt;**. 
+- Core variables such as **&lt;u&gt;LOCATION&lt;/u&gt;**, **&lt;u&gt;SUBJECT&lt;/u&gt;**, **&lt;u&gt;TIME&lt;/u&gt;**, and **&lt;u&gt;Value&lt;/u&gt;** are properly structured and appear consistently across records. 
+- The dataset successfully combines the two original CSV files, removing duplicates and aligning column names. 
+- A **&lt;u&gt;DtypeWarning&lt;/u&gt;** was still raised for columns **&lt;u&gt;17&lt;/u&gt;** and **&lt;u&gt;18&lt;/u&gt;**, indicating **&lt;u&gt;mixed data types&lt;/u&gt;** (numeric and string values). 
+  This will be handled in the **next section** when we define column data types explicitly. 
+ <hr class="ls0">#%% md 
+## 3. Column Overview 
+ 
+In this section, we will display all column names in the cleaned dataset and verify that they match the expected OECD structure. 
+This helps confirm that the dataset is properly formatted before building the field dictionary in the next step. 
+ 
+Key goals of this section: 
+1. List all columns and ensure **&lt;u&gt;naming consistency&lt;/u&gt;** across merged data. 
+2. Identify any **&lt;u&gt;unexpected or redundant fields&lt;/u&gt;**. 
+3. Prepare for field documentation in the upcoming **&lt;u&gt;Core Field Descriptions&lt;/u&gt;** step. 
+ <hr class="ls0">#%% 
+</span><span class="s2"># Display column names</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Column Names in Cleaned OECD CLI Dataset:</span><span class="s1">\n</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s1">for </span><span class="s0">i</span><span class="s3">, </span><span class="s0">col </span><span class="s1">in </span><span class="s0">enumerate</span><span class="s3">(</span><span class="s0">df</span><span class="s3">.</span><span class="s0">columns</span><span class="s3">):</span>
+    <span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;</span><span class="s1">{</span><span class="s0">i</span><span class="s3">+</span><span class="s5">1</span><span class="s1">:</span><span class="s4">&gt;2</span><span class="s1">}</span><span class="s4">. </span><span class="s1">{</span><span class="s0">col</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<hr class="ls0"><span class="s0">#%% md 
+--- 
+### Observations 
+ 
+- The dataset contains **&lt;u&gt;20 columns&lt;/u&gt;** after combining the two OECD source files. 
+- Several columns exist in **&lt;u&gt;duplicated naming pairs&lt;/u&gt;**, typically one in uppercase and one in title case (e.g., `LOCATION` vs. `Country`, `SUBJECT` vs. `Subject`, `MEASURE` vs. `Measure`). 
+- This pattern suggests that both CSVs used slightly different schemas—one with **&lt;u&gt;code-style identifiers&lt;/u&gt;** (for data joins) and another with **&lt;u&gt;readable labels&lt;/u&gt;** (for human interpretation). 
+- Additional metadata fields such as **&lt;u&gt;PowerCode&lt;/u&gt;**, **&lt;u&gt;Reference Period&lt;/u&gt;**, and **&lt;u&gt;Flag Codes&lt;/u&gt;** describe units, reference time, and data quality indicators. 
+- The dataset also includes a derived column **&lt;u&gt;TIME_PARSED&lt;/u&gt;**, likely generated during preprocessing to standardize time format. 
+- In **&lt;u&gt;Step 4 – Core Field Descriptions&lt;/u&gt;**, we will consolidate duplicated columns, retain essential fields, and document their meanings and data types. 
+ 
+### Note on OECD Column Structure 
+ 
+The OECD **&lt;u&gt;Main Economic Indicators (MEI)&lt;/u&gt;** datasets include **&lt;u&gt;two parallel naming schemes&lt;/u&gt;** for several variables: 
+ 
+- **&lt;u&gt;Machine-friendly fields&lt;/u&gt;** — used for programmatic access and data merging (e.g., `LOCATION`, `SUBJECT`, `TIME`, `VALUE`). 
+- **&lt;u&gt;Human-readable fields&lt;/u&gt;** — designed for spreadsheet users (e.g., `Country`, `Subject`, `Time`, `Value`). 
+ 
+This duplication originates from OECD’s **&lt;u&gt;standard export process&lt;/u&gt;**, not from the data cleaning steps in this project. 
+In the following section (**&lt;u&gt;Core Field Descriptions&lt;/u&gt;**), duplicated field pairs will be consolidated to ensure consistent naming across analyses. 
+ 
+This structural pattern is part of the official OECD data export design, 
+as described in the [OECD Data Portal](https://data.oecd.org) and its *Main Economic Indicators (MEI)* documentation. 
+ <hr class="ls0">#%% md 
+### 4. Core Field Descriptions 
+ 
+The following table documents the **&lt;u&gt;core fields&lt;/u&gt;** retained from the cleaned OECD CLI dataset. 
+Each entry includes its **&lt;u&gt;name&lt;/u&gt;**, **&lt;u&gt;data type&lt;/u&gt;**, and **&lt;u&gt;interpretation&lt;/u&gt;** based on the OECD Main Economic Indicators (MEI) documentation. 
+ 
+| Field Name | Type | Description                                                                                | 
+|:-------------|:------|:-------------------------------------------------------------------------------------------| 
+| **LOCATION** | String | OECD country or region code (e.g., USA, FRA, MEX). Used for grouping and joining datasets. | 
+| **Country** | String | Human-readable country name corresponding to `LOCATION`.                                   | 
+| **SUBJECT** | String | Code representing the economic indicator (e.g., `LOLITOAA` for CLI index).                 | 
+| **Subject** | String | Full indicator label (e.g., “Composite leading indicator (OECD base 2015 = 100)”).         | 
+| **MEASURE** | String | Type of measurement (e.g., “STSA” = Seasonally Adjusted Index).                            | 
+| **FREQUENCY** | String | Observation frequency (usually `M` for Monthly).                                           | 
+| **TIME** | String | Date in `YYYY-MM` format as provided in the source file.                                   | 
+| **TIME_PARSED** | Datetime | Converted timestamp used for sorting and time-series analysis.                             | 
+| **Value** | Float | Numerical indicator value (e.g., index level or percentage).                               | 
+| **Unit** | String | Measurement unit label (e.g., “Index”, “Percentage”).                                      | 
+| **PowerCode** | Integer | Scaling factor for Value (usually 0 = no scaling).                                         | 
+| **Reference Period** | String | Time reference for the measurement, if applicable.                                         | 
+| **Flag Codes** | String | OECD metadata flags indicating estimates or provisional data.                              | 
+| **Flags** | String | Expanded text description of flag codes.                                                   | 
+ 
+--- 
+ 
+### Observations 
+ 
+- The cleaned dataset retains **&lt;u&gt;both code-level and readable fields&lt;/u&gt;** to support machine joins and human interpretation. 
+- Core variables (`LOCATION`, `SUBJECT`, `TIME`, `Value`) form the **&lt;u&gt;primary analytical structure&lt;/u&gt;** for later trend and correlation analysis. 
+- Supplementary columns such as `Unit`, `PowerCode`, and `Reference Period` provide context for units and scaling but are not used in statistical operations. 
+- In the next step, **&lt;u&gt;Extended Field Notes&lt;/u&gt;**, we will expand on the meaning of key variables (`SUBJECT`, `MEASURE`, `VALUE`) with specific examples from the OECD metadata. 
+ <hr class="ls0">#%% md 
+### Step 5 – Extended Field Notes 
+ 
+The following notes expand on key **&lt;u&gt;OECD CLI fields&lt;/u&gt;** that require additional explanation. 
+They describe common values, their meanings, and how they will be used in later analyses. 
+ 
+| **Field** | **Example Values** | **Explanation (English)** | **说明 (中文解释)** | 
+|:-----------|:------------------|:---------------------------|:--------------------| 
+| **SUBJECT** | `LOLITOAA`, `LOLITOTR_STSA`, `B6BLTT02USA661N` | Identifies the specific indicator type (e.g., Composite Leading Indicator – OECD base 2015 = 100). Each code corresponds to an OECD-defined metric. | 标识特定的经济指标类型（例如 OECD 基准 2015 = 100 的综合领先指标）。每个代码都对应 OECD 定义的指标。 | 
+| **MEASURE** | `STSA`, `NSA`, `IDX` | Describes the **&lt;u&gt;measurement form&lt;/u&gt;** — seasonally adjusted (STSA), non-adjusted (NSA), or index type (IDX). This determines whether trends are adjusted for seasonality. | 描述数据的**&lt;u&gt;度量形式&lt;/u&gt;** — 季节调整 (STSA)、未调整 (NSA) 或 指数 (IDX)。它决定了趋势是否经过季节调整。 | 
+| **FREQUENCY** | `M`, `Q` | Defines how often the observation is recorded: `M` = Monthly, `Q` = Quarterly. Most CLI data are monthly. | 定义观测记录的频率：`M` = 月度，`Q` = 季度。大多数 CLI 数据为月度频率。 | 
+| **VALUE** | e.g., `101.23`, `99.54` | Indicates the **&lt;u&gt;actual numerical value&lt;/u&gt;** of the indicator, typically an index where 100 = long-term average of economic activity. | 表示该指标的**&lt;u&gt;实际数值&lt;/u&gt;**，通常为以 100 为长期平均水平的指数值。 | 
+| **FLAG CODES** | `E`, `P`, `A` | Metadata flags — `E` = Estimated, `P` = Provisional, `A` = Aggregated data. Useful for data-quality assessment. | 元数据标识 — `E` = 估算值，`P` = 临时值，`A` = 汇总数据。用于评估数据质量。 | 
+ 
+### Observations 
+ 
+- Fields such as **&lt;u&gt;SUBJECT&lt;/u&gt;**, **&lt;u&gt;MEASURE&lt;/u&gt;**, and **&lt;u&gt;VALUE&lt;/u&gt;** define the **&lt;u&gt;semantic core&lt;/u&gt;** of the OECD CLI dataset. 
+- Understanding **&lt;u&gt;MEASURE&lt;/u&gt;** (especially STSA vs NSA) is crucial for correct comparison across countries. 
+- **&lt;u&gt;FLAG CODES&lt;/u&gt;** provide essential metadata for filtering out non-final or estimated observations before modeling. 
+- In the next step (**&lt;u&gt;Field Relationships&lt;/u&gt;**), we will explore how these variables interact to describe the time-series structure of the dataset. 
+ <hr class="ls0">#%% md 
+### 6. Field Relationships 
+ 
+This section summarizes how the main **&lt;u&gt;OECD CLI dataset fields&lt;/u&gt;** interact to form a structured time series.   
+Understanding these relationships helps ensure proper filtering, grouping, and time-based analysis. 
+ 
+| **Field 1** | **Field 2** | **Relationship Type** | **Explanation (English)** | **说明 (中文解释)** | 
+|:-------------|:-------------|:----------------------|:---------------------------|:--------------------| 
+| **LOCATION** | **TIME** | One-to-Many | Each country (`LOCATION`) contains multiple monthly or quarterly observations (`TIME`). | 每个国家（`LOCATION`）包含多个按月或按季度记录的观测值（`TIME`）。 | 
+| **LOCATION** | **SUBJECT** | One-to-Many | A single country can have multiple indicator categories (`SUBJECT`) such as CLI, Confidence Index, etc. | 一个国家包含多个经济指标类别（`SUBJECT`），如综合领先指标或信心指数。 | 
+| **SUBJECT** | **MEASURE** | One-to-One or One-to-Few | Each indicator (`SUBJECT`) usually has a small set of measures, often both seasonally adjusted (`STSA`) and unadjusted (`NSA`). | 每个指标（`SUBJECT`）通常对应少量度量方式，如季节调整（`STSA`）与未调整（`NSA`）。 | 
+| **TIME** | **VALUE** | One-to-One | Each timestamp corresponds to exactly one numeric observation value. | 每个时间点（`TIME`）对应唯一的数值观测值。 | 
+| **VALUE** | **FLAG CODES** | One-to-One (Conditional) | Some values have flags indicating data status (e.g., estimated or provisional). | 部分数值带有标识符，用于说明数据状态（例如估算或临时）。 | 
+ 
+--- 
+ 
+### Observations 
+ 
+- The dataset has a **&lt;u&gt;hierarchical&lt;/u&gt;** structure:   
+  **Country → Indicator → Measure → Time → Value**.   
+  This structure enables **&lt;u&gt;multi-level grouping&lt;/u&gt;** and **&lt;u&gt;aggregation&lt;/u&gt;**. 
+- The combination of `LOCATION`, `SUBJECT`, and `TIME` uniquely identifies a record — this **&lt;u&gt;composite key&lt;/u&gt;** ensures integrity when merging datasets. 
+- When filtering for a specific indicator (e.g., CLI only), users should keep the `STSA` measure to ensure seasonally adjusted comparisons. 
+- These relationships guide how future notebooks (03–04) perform **&lt;u&gt;trend analysis&lt;/u&gt;** and **&lt;u&gt;correlation studies&lt;/u&gt;** consistently. 
+ 
+--- 
+ 
+### Next Step 
+ 
+In the next notebook (**03_cli_trends_analysis.ipynb**),   
+we will use these structured relationships to plot **&lt;u&gt;CLI trends&lt;/u&gt;** across multiple countries   
+and explore changes **before and after 2020**. 
+ <hr class="ls0">#%% md 
+</span></pre>
+</body>
+</html>

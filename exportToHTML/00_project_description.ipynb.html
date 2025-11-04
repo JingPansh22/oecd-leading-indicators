@@ -1,0 +1,118 @@
+<html>
+<head>
+<title>00_project_description.ipynb</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.ls0 { height: 1px; border-width: 0; color: #43454a; background-color:#43454a}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+00_project_description.ipynb</font>
+</center></td></tr></table>
+<pre><span class="s0">#%% md 
+# 00 — Project Description 
+ 
+## 1. Introduction and Motivation 
+The **&lt;u&gt;OECD Composite Leading Indicators (CLI)&lt;/u&gt;** are designed to anticipate turning points in overall **&lt;u&gt;economic activity&lt;/u&gt;** relative to trend. They combine multiple **&lt;u&gt;leading indicators&lt;/u&gt;** (e.g., order books, confidence indices, production expectations) to provide early-cycle signals. 
+ 
+After the global shock in **&lt;u&gt;2020&lt;/u&gt;**, many economies exhibited divergent recovery paths. Understanding how **&lt;u&gt;CLI&lt;/u&gt;** behaved across countries can reveal early signs of slowdown or rebound. 
+This project explores and visualizes OECD **&lt;u&gt;CLI&lt;/u&gt;** dynamics across countries and examines their relationships with key **&lt;u&gt;macroeconomic indicators&lt;/u&gt;**. 
+ 
+--- 
+ 
+## 2. Research Questions 
+- **RQ1:** How did the **&lt;u&gt;CLI&lt;/u&gt;** change **before and after 2020**? 
+- **RQ2:** Which **&lt;u&gt;countries&lt;/u&gt;** experienced the **largest variations** in **&lt;u&gt;CLI&lt;/u&gt;** during this period? 
+- **RQ3:** Is there a significant **&lt;u&gt;correlation&lt;/u&gt;** between **&lt;u&gt;CLI&lt;/u&gt;** and **&lt;u&gt;GDP growth&lt;/u&gt;** (or other **&lt;u&gt;macroeconomic indicators&lt;/u&gt;**)? 
+ 
+--- 
+ 
+## 3. Objectives 
+This analysis aims to: 
+1. Understand the **&lt;u&gt;structure&lt;/u&gt;** and **&lt;u&gt;behavior&lt;/u&gt;** of OECD **&lt;u&gt;CLI&lt;/u&gt;** data. 
+2. Visualize **&lt;u&gt;pre-/post-2020&lt;/u&gt;** trends across multiple **&lt;u&gt;countries&lt;/u&gt;**. 
+3. Identify countries with the **&lt;u&gt;highest fluctuations&lt;/u&gt;**. 
+4. Examine the **&lt;u&gt;relationship&lt;/u&gt;** between **&lt;u&gt;CLI&lt;/u&gt;** and **&lt;u&gt;GDP growth&lt;/u&gt;** (and related indicators). 
+ 
+--- 
+ 
+## 4. Methodology Overview 
+We follow a structured process aligned with **&lt;u&gt;IMRAD&lt;/u&gt;** and **&lt;u&gt;CRISP-DM&lt;/u&gt;**: 
+1. **&lt;u&gt;Data Understanding&lt;/u&gt;** — review dataset structure and **&lt;u&gt;field definitions&lt;/u&gt;**. 
+2. **&lt;u&gt;Data Preparation&lt;/u&gt;** — handle **&lt;u&gt;missing values&lt;/u&gt;**, normalize time fields, filter relevant series. 
+3. **&lt;u&gt;Exploratory Analysis&lt;/u&gt;** — time-series visualization and **&lt;u&gt;country-level comparison&lt;/u&gt;**. 
+4. **&lt;u&gt;Correlation Study&lt;/u&gt;** — quantify relationships between **&lt;u&gt;CLI&lt;/u&gt;** and **&lt;u&gt;GDP growth&lt;/u&gt;** (and others). 
+5. **&lt;u&gt;Discussion &amp; Conclusion&lt;/u&gt;** — interpret findings, note **&lt;u&gt;limitations&lt;/u&gt;**, outline **&lt;u&gt;future work&lt;/u&gt;**. 
+ 
+--- 
+ 
+## 5. Expected Outcomes 
+- Clear trends in **&lt;u&gt;CLI&lt;/u&gt;** during and after **&lt;u&gt;2020&lt;/u&gt;**. 
+- Cross-country visualization of **&lt;u&gt;recovery dynamics&lt;/u&gt;**. 
+- Statistical insight into whether **&lt;u&gt;CLI&lt;/u&gt;** helps anticipate **&lt;u&gt;GDP growth&lt;/u&gt;**. 
+- A **&lt;u&gt;reproducible&lt;/u&gt;** analysis pipeline with code, figures, and documentation. 
+ 
+--- 
+ 
+## 6. Project Structure 
+```text 
+oecd-leading-indicators/ 
+│ 
+├── data/ 
+│   ├── MEI_20022020103548670.csv 
+│   └── MEI_26032020094401290.csv 
+│ 
+├── notebooks/ 
+│   ├── 00_project_description.ipynb 
+│   ├── 01_intro_and_dataset.ipynb 
+│   ├── 02_data_dictionary.ipynb 
+│   ├── 03_cli_trends_analysis.ipynb 
+│   ├── 04_correlation_study.ipynb 
+│   └── 05_summary_and_discussion.ipynb 
+│ 
+├── src/ 
+│   └── utils.py 
+│ 
+├── reports/ 
+│   └── .gitkeep 
+│ 
+├── figs/ 
+│   └── .gitkeep 
+│ 
+├── README.md 
+└── .gitignore 
+``` 
+ 
+--- 
+ 
+## 7. Next Steps 
+At this stage, the project framework and research questions have been established. 
+The next phase focuses on performing the core analysis tasks: 
+ 
+1. Complete the **&lt;u&gt;data preparation&lt;/u&gt;** for OECD **&lt;u&gt;CLI&lt;/u&gt;** fields. 
+2. Clean and preprocess the dataset for **&lt;u&gt;trend analysis&lt;/u&gt;**. 
+3. Visualize **&lt;u&gt;country-level CLI changes&lt;/u&gt;** to identify major patterns. 
+4. Conduct **&lt;u&gt;correlation studies&lt;/u&gt;** between **&lt;u&gt;CLI&lt;/u&gt;** and other **&lt;u&gt;macroeconomic indicators&lt;/u&gt;**, and summarize findings. 
+ 
+--- 
+ 
+## 8. References 
+- **OECD Composite Leading Indicators (CLI)** — Official OECD source describing the concept and methodology of CLI. 
+  [https://data.oecd.org/leadind/composite-leading-indicator-cli.htm](https://data.oecd.org/leadind/composite-leading-indicator-cli.htm) 
+- **Kaggle Dataset (Leading Indicators – OECD)** — Primary dataset used in this project, containing monthly CLI data for multiple countries. 
+  [https://www.kaggle.com/datasets/alenavorushilova/leading-indicators-oecd](https://www.kaggle.com/datasets/alenavorushilova/leading-indicators-oecd) 
+- **OECD MEI (Main Economic Indicators) Portal** — Provides related macroeconomic indicators such as GDP, which are used for correlation analysis. 
+  [https://stats.oecd.org/](https://stats.oecd.org/) 
+- **CRISP-DM Framework** — Data science process model that guides this project’s workflow from understanding to evaluation. 
+  [https://en.wikipedia.org/wiki/Cross-industry_standard_process_for_data_mining](https://en.wikipedia.org/wiki/Cross-industry_standard_process_for_data_mining) 
+- **IMRAD Structure (Scientific Writing Model)** — Scientific paper structure used to organize this project into logical sections (Introduction, Methods, Results, Discussion). 
+  [https://en.wikipedia.org/wiki/IMRAD](https://en.wikipedia.org/wiki/IMRAD) 
+ 
+ <hr class="ls0">#%% md 
+</span></pre>
+</body>
+</html>
