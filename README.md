@@ -123,3 +123,5 @@ Boston, MA, USA
 ## Acknowledgments
 Dataset by __Alena Vorushilova__ via Kaggle  
 OECD Open Data Portal: [https://data.oecd.org](https://data.oecd.org)
+
+For a detailed notebook plan, see [Project Overview](project_overview.md)
