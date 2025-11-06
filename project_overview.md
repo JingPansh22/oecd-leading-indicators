@@ -12,18 +12,26 @@ This document provides a complete structural overview of the **_OECD Leading Ind
 It summarizes the purpose and content of each Jupyter Notebook (00–06), ensuring a clear understanding of the project flow — from **_data preparation_** to **_analysis_** and **_discussion_**.
 
 ---
+## **Research Questions → Notebook Mapping**
 
+| RQ | Question | Notebook |
+|---|---|---|
+| RQ1 | How did the **<u>CLI</u>** change **before and after 2020**? | 03 _cli_trends_analysis_ |
+| RQ2 | Which **<u>countries</u>** experienced the **largest variations** in **<u>CLI</u>** during this period? | 03 _cli_trends_analysis_ |
+| RQ3 | Is there a significant **<u>correlation</u>** between **<u>CLI</u>** and **<u>GDP growth</u>** (or other **<u>macroeconomic indicators</u>**)? | 04 _correlation_study_ |
+
+---
 ## **Notebook Summary**
 
 | Notebook | Title | Purpose | Phase |
 |-----------|--------|----------|--------|
-| 00 _project_description_ | Project Description | Defines the **_motivation_**, **_research questions_**, **_objectives_**, **_methods_**, and **_dataset sources_**. | Project Setup |
-| 01 _intro_and_dataset_ | Dataset Introduction and Cleaning | Loads and merges the two **_OECD CSV datasets_**, performs **_cleaning_**, and saves a unified dataset. | Data Preparation |
-| 02 _data_dictionary_ | Data Dictionary | Describes **_field meanings_**, **_relationships_**, and **_variable consistency_**. | Data Understanding |
-| 03 _cli_trends_analysis_ | CLI Trends Analysis | Explores **_CLI time-series trends_** across countries and years. | Exploratory Analysis |
-| 04 _correlation_study_ | Correlation Study | Examines **_correlations_** between **_CLI_** and **_GDP_** or other **_macroeconomic indicators_**. | Statistical Analysis |
-| 05 _summary_and_discussion_ | Summary and Discussion | Summarizes findings, discusses implications, and identifies limitations. | Interpretation |
-| 06 _appendix_and_references_ | Appendix and References *(optional)* | Contains **_supplementary figures_**, **_tables_**, and **_references_**. | Supplementary |
+| 00 _project_description_ | Project Description | Defines the **<u>motivation</u>**, **<u>research questions</u>**, **<u>objectives</u>**, **<u>methods</u>**, and **<u>dataset sources</u>**. | Project Setup |
+| 01 _intro_and_dataset_ | Dataset Introduction and Cleaning | Loads and merges the two **<u>OECD CSV datasets</u>**, performs **<u>cleaning</u>**, and saves a unified dataset. | Data Preparation |
+| 02 _data_dictionary_ | Data Dictionary | Documents **<u>field meanings</u>**, **<u>types</u>**, **<u>relationships</u>**, and naming consistency; clarifies dual naming (machine-friendly vs human-readable). | Data Understanding |
+| 03 _cli_trends_analysis_ | CLI Trends Analysis | Explores **<u>CLI time-series patterns</u>**, compares **<u>pre/post-2020</u>** changes, and identifies countries with **<u>largest fluctuations</u>**. | Exploratory Analysis |
+| 04 _correlation_study_ | Correlation Study | Quantifies relationships between **<u>CLI</u>** and **<u>GDP growth</u>** (and other indicators) via **<u>correlation</u>**/**<u>regression</u>** with aligned **<u>time</u>** and **<u>country</u>** dimensions. | Statistical Analysis |
+| 05 _summary_and_discussion_ | Summary and Discussion | Synthesizes findings, discusses implications, and identifies limitations and future work. | Interpretation |
+| 06 _appendix_and_references_ | Appendix and References *(optional)* | Provides supplementary figures, tables, and references. | Supplementary |
 
 ---
 
@@ -72,17 +80,18 @@ It summarizes the purpose and content of each Jupyter Notebook (00–06), ensuri
 ---
 
 ### **03 – CLI Trends Analysis**
-| Step | Section | Description |
-|------|----------|-------------|
-| 1 | Purpose | State goal: exploring **_CLI time-series patterns_**. |
-| 2 | Load Cleaned Dataset | Load unified dataset. |
-| 3 | Time Range Overview | Identify earliest and latest dates. |
-| 4 | Country Distribution | Count available records per country. |
-| 5 | Time Series Visualization | Plot **_country-level CLI over time_**. |
-| 6 | Before vs After 2020 Comparison | Compare pre/post-pandemic trends. |
-| 7 | Identify Extreme Movements | Find countries with largest changes. |
-| 8 | Observations and Insights | Discuss trends and initial conclusions. |
-| 9 | Summary and Next Step | Conclude and prepare for correlation study. |
+| Step | Section                             | Description                                                                                                                                |
+| ---- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | **Purpose**                         | State goal: exploring **CLI time-series patterns**.                                                                                        |
+| 2    | **Load Cleaned Dataset**            | Load the unified dataset produced in the previous notebook.                                                                                |
+| 3    | **Data Quality & Filtering Check**  | Verify data integrity and ensure only **CLI (Index-based)** indicators are retained. *(New section — critical for preventing mixed data.)* |
+| 4    | **Time Range Overview**             | Identify earliest and latest observation dates.                                                                                            |
+| 5    | **Country Distribution**            | Count available records per country to confirm balanced coverage.                                                                          |
+| 6    | **Time Series Visualization**       | Plot **country-level CLI** trends over time (clean, filtered data).                                                                        |
+| 7    | **Before vs After 2020 Comparison** | Quantitatively compare pre- and post-pandemic CLI levels.                                                                                  |
+| 8    | **Identify Extreme Movements**      | Find countries with largest increases/decreases in CLI.                                                                                    |
+| 9    | **Observations and Insights**       | Summarize temporal and cross-country trends, discuss implications.                                                                         |
+| 10   | **Summary and Next Step**           | Wrap up and transition to the **correlation analysis** notebook.                                                                           |
 
 ---
 
