@@ -80,18 +80,17 @@ It summarizes the purpose and content of each Jupyter Notebook (00–06), ensuri
 ---
 
 ### **03 – CLI Trends Analysis**
-| Step | Section                             | Description                                                                                                                                |
-| ---- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1    | **Purpose**                         | State goal: exploring **CLI time-series patterns**.                                                                                        |
-| 2    | **Load Cleaned Dataset**            | Load the unified dataset produced in the previous notebook.                                                                                |
-| 3    | **Data Quality & Filtering Check**  | Verify data integrity and ensure only **CLI (Index-based)** indicators are retained. *(New section — critical for preventing mixed data.)* |
-| 4    | **Time Range Overview**             | Identify earliest and latest observation dates.                                                                                            |
-| 5    | **Country Distribution**            | Count available records per country to confirm balanced coverage.                                                                          |
-| 6    | **Time Series Visualization**       | Plot **country-level CLI** trends over time (clean, filtered data).                                                                        |
-| 7    | **Before vs After 2020 Comparison** | Quantitatively compare pre- and post-pandemic CLI levels.                                                                                  |
-| 8    | **Identify Extreme Movements**      | Find countries with largest increases/decreases in CLI.                                                                                    |
-| 9    | **Observations and Insights**       | Summarize temporal and cross-country trends, discuss implications.                                                                         |
-| 10   | **Summary and Next Step**           | Wrap up and transition to the **correlation analysis** notebook.                                                                           |
+| Step | Section                                     | Description                                                                                                                                |
+| ---- |---------------------------------------------| ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | **Purpose**                                 | State goal: exploring **CLI time-series patterns**.                                                                                        |
+| 2    | **Load Cleaned Dataset**                    | Load the unified dataset produced in the previous notebook.                                                                                |
+| 3    | **Data Quality & Filtering Check**          | Verify data integrity and ensure only **CLI (Index-based)** indicators are retained. *(New section — critical for preventing mixed data.)* |
+| 4    | **Time Range Overview**                     | Identify earliest and latest observation dates.                                                                                            |
+| 5    | **Country Distribution**                    | Count available records per country to confirm balanced coverage.                                                                          |
+| 6    | **Time Series Visualization**               | Plot **country-level CLI** trends over time (clean, filtered data).                                                                        |
+| 7    | **Before vs After 2020 Comparison**         | Quantitatively compare pre- and post-pandemic CLI levels.                                                                                  |
+| 8    | **Identify Extreme Movements**              | Find countries with largest increases/decreases in CLI.                                                                                    |
+| 9    | **Observations and Insights and Next Step** | Summarize temporal and cross-country trends, discuss implications.                                                                         | |
 
 ---
 
@@ -99,13 +98,25 @@ It summarizes the purpose and content of each Jupyter Notebook (00–06), ensuri
 | Step | Section | Description |
 |------|----------|-------------|
 | 1 | Purpose | Define correlation goals (**_CLI vs GDP_**, etc.). |
-| 2 | Load CLI and GDP Data | Import **_CLI dataset_** and external **_GDP indicators_**. |
+| 2 | Load CLI Data | Import **_CLI dataset_**. |
 | 3 | Data Alignment | Synchronize **_time_** and **_country dimensions_**. |
 | 4 | Correlation Computation | Calculate correlation coefficients (**_Pearson_**, **_Spearman_**). |
 | 5 | Correlation Visualization | Plot **_heatmaps_** and **_scatterplots_**. |
 | 6 | Country-Level Comparison | Compare correlation differences among nations. |
 | 7 | Interpretation | Interpret findings from **_economic perspective_**. |
 | 8 | Summary and Next Step | Summarize and move to discussion. |
+
+
+### **04 – Correlation Study**
+
+| Step | Section | Description |
+|:--:|:--|:--|
+| 1 | Purpose | Define the goal: study the relationship between **<u>CLI level</u>** and **<u>CLI growth</u>** across countries (growth used as a proxy for momentum). |
+| 2 | Load CLI Data | Load the cleaned OECD CLI dataset produced in Notebook 03. |
+| 3 | Compute CLI Growth | For each country, compute monthly **<u>pct_change</u>** of CLI to obtain a growth series; align frequency and dates. |
+| 4 | Correlation Computation | Compute correlations between **<u>CLI level</u>** and **<u>CLI growth</u>** (country-wise; optional cross-country matrix). |
+| 5 | Correlation Visualization | Visualize with a compact **<u>heatmap</u>** and a **<u>bar chart</u>** of correlation strengths. |
+| 6 | Observations & Interpretation | Summarize which economies show stronger/weaker synchronization and note limitations (early-2020 cutoff). |
 
 ---
 
