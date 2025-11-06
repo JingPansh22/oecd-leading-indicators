@@ -1,0 +1,414 @@
+<html>
+<head>
+<title>03_cli_trends_analysis.ipynb</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #cf8e6d;}
+.s2 { color: #7a7e85;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+.ls0 { height: 1px; border-width: 0; color: #43454a; background-color:#43454a}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+03_cli_trends_analysis.ipynb</font>
+</center></td></tr></table>
+<pre><span class="s0">#%% 
+</span><hr class="ls0"><span class="s0">#%% md 
+## 1. Purpose 
+ 
+This notebook focuses on **Research Questions 1 and 2 (RQ1 &amp; RQ2)**: 
+ 
+- **RQ1:** How did the **&lt;u&gt;Composite Leading Indicator (CLI)&lt;/u&gt;** change **&lt;u&gt;before/after 2020&lt;/u&gt;**? 
+- **RQ2:** Which **&lt;u&gt;countries&lt;/u&gt;** experienced the **&lt;u&gt;largest variations&lt;/u&gt;** in **&lt;u&gt;CLI&lt;/u&gt;** during this period? 
+ 
+The goal is to analyze **&lt;u&gt;temporal patterns&lt;/u&gt;** and **&lt;u&gt;cross-country differences&lt;/u&gt;** in economic confidence indicators between 2016 and 2023, based on the cleaned dataset produced in previous notebooks. 
+ 
+**Scope:** 
+Perform **&lt;u&gt;time-series exploration&lt;/u&gt;**, visualize **&lt;u&gt;pre/post-2020 trends&lt;/u&gt;**, and identify **&lt;u&gt;countries with high volatility&lt;/u&gt;**, forming the analytical foundation for the correlation study in Notebook 04. 
+ 
+**Expected Outputs:** 
+- Line charts illustrating **&lt;u&gt;CLI trends before and after 2020&lt;/u&gt;**. 
+- A ranking plot showing **&lt;u&gt;volatility by country&lt;/u&gt;**. 
+- **&lt;u&gt;Observations&lt;/u&gt;** summarizing key economic shifts and anomalies. 
+ 
+--- 
+ 
+### Observations 
+*(To be completed after performing the analysis.)* 
+ 
+ <hr class="ls0">#%% md 
+## 2. Load Cleaned Dataset 
+ 
+In this step, we load the **&lt;u&gt;cleaned OECD CLI dataset&lt;/u&gt;** created in the previous notebook. 
+This unified dataset merges the two original OECD MEI CSV files, ensuring no duplicates and consistent column names across all records. 
+ 
+We will: 
+1. Load the file into a **Pandas DataFrame**. 
+2. Preview the first few rows to verify structure and completeness. 
+3. Confirm that field names and data types match expectations. 
+ <hr class="ls0">#%% 
+</span><span class="s1">import </span><span class="s0">pandas </span><span class="s1">as </span><span class="s0">pd</span>
+<span class="s1">from </span><span class="s0">matplotlib </span><span class="s1">import </span><span class="s0">pyplot </span><span class="s1">as </span><span class="s0">plt</span>
+
+<span class="s2"># Load cleaned dataset</span>
+<span class="s0">file_path </span><span class="s3">= </span><span class="s4">&quot;../data/cleaned_oecd_cli.csv&quot;</span>
+<span class="s0">df </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">read_csv</span><span class="s3">(</span><span class="s0">file_path</span><span class="s3">)</span>
+
+<span class="s2"># Display basic preview</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Dataset loaded successfully!&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Number of rows: </span><span class="s1">{</span><span class="s0">df</span><span class="s3">.</span><span class="s0">shape</span><span class="s3">[</span><span class="s5">0</span><span class="s3">]</span><span class="s1">}</span><span class="s4">, Number of columns: </span><span class="s1">{</span><span class="s0">df</span><span class="s3">.</span><span class="s0">shape</span><span class="s3">[</span><span class="s5">1</span><span class="s3">]</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">df</span><span class="s3">.</span><span class="s0">head</span><span class="s3">()</span>
+<hr class="ls0"><span class="s0">#%% md 
+### Observations 
+ 
+- The dataset was loaded successfully, containing approximately **&lt;u&gt;38,000 rows&lt;/u&gt;** and **&lt;u&gt;20 columns&lt;/u&gt;**. 
+- Core analytical fields such as **&lt;u&gt;LOCATION&lt;/u&gt;**, **&lt;u&gt;SUBJECT&lt;/u&gt;**, **&lt;u&gt;TIME&lt;/u&gt;**, and **&lt;u&gt;Value&lt;/u&gt;** are properly structured for trend analysis. 
+- A **&lt;u&gt;DtypeWarning&lt;/u&gt;** appeared for columns **17** and **18**, indicating **&lt;u&gt;mixed data types&lt;/u&gt;** (numeric and string values). 
+  This issue stems from **&lt;u&gt;Flag Codes&lt;/u&gt;** and **&lt;u&gt;Flags&lt;/u&gt;** columns, which contain both numeric indicators and text-based flags. 
+  It does not affect CLI trend visualization and will be addressed in subsequent type-standardization steps. 
+- No structural errors or null headers were detected during import. 
+ <hr class="ls0">#%% md 
+### Notes 
+ 
+- The file `cleaned_oecd_cli.csv` was produced in **Notebook 01 – Intro and Dataset**, following the merging and cleaning process. 
+- The dataset spans data from **&lt;u&gt;2016 to 2020&lt;/u&gt;**, providing sufficient coverage for both pre- and post-pandemic comparison. 
+- Two parallel naming conventions exist: 
+  - **Machine-friendly fields:** `LOCATION`, `SUBJECT`, `TIME`, `Value` 
+  - **Human-readable fields:** `Country`, `Subject`, `Time`, `Value` 
+- The **&lt;u&gt;DtypeWarning&lt;/u&gt;** message is common when OECD files include both textual and numeric quality flags. 
+  We will resolve this later by explicitly defining column dtypes or using `low_memory=False` in data import if needed. 
+ <hr class="ls0">#%% md 
+## 3. Data Quality &amp; Filtering Check 
+ 
+Before analyzing trends, we must ensure that the dataset only contains valid **Composite Leading Indicator (CLI)** records. 
+The raw OECD dataset includes many different subjects (GDP, Confidence Index, etc.), and their numerical ranges vary widely. 
+Without filtering, trend plots may show unrealistic spikes or mis-scaled values. 
+ 
+### Objectives 
+1. Verify that all CLI records are correctly identified. 
+2. Exclude non-CLI subjects and keep only **seasonally adjusted (STSA)** observations. 
+3. Standardize the time field and remove missing or corrupted entries. 
+ 
+### Filtering Logic 
+- Keep rows where `SUBJECT` contains `&quot;LOLITO&quot;` → OECD’s code for CLI indicators. 
+- Keep only `MEASURE == &quot;STSA&quot;` → seasonally adjusted index values. 
+- Drop rows where `TIME` or `Value` is missing. 
+- Convert `TIME` to datetime (`TIME_PARSED`) for correct chronological ordering. 
+ 
+After this cleaning, the remaining data will form a consistent time-series base for trend visualization and country comparison. 
+ <hr class="ls0">#%% 
+</span><span class="s1">import </span><span class="s0">re</span>
+<span class="s1">import </span><span class="s0">pandas </span><span class="s1">as </span><span class="s0">pd</span>
+
+<span class="s2"># 1) 诊断：看看含有“lead”字样的 Subject 文本前 20 个</span>
+<span class="s0">top_lead_subjects </span><span class="s3">= (</span>
+    <span class="s0">df</span><span class="s3">[</span><span class="s4">'Subject'</span><span class="s3">].</span><span class="s0">astype</span><span class="s3">(</span><span class="s0">str</span><span class="s3">)</span>
+      <span class="s3">.</span><span class="s0">str</span><span class="s3">.</span><span class="s0">lower</span><span class="s3">()</span>
+      <span class="s3">.</span><span class="s0">pipe</span><span class="s3">(</span><span class="s1">lambda </span><span class="s0">s</span><span class="s3">: </span><span class="s0">s</span><span class="s3">[</span><span class="s0">s</span><span class="s3">.</span><span class="s0">str</span><span class="s3">.</span><span class="s0">contains</span><span class="s3">(</span><span class="s4">'lead'</span><span class="s3">, </span><span class="s0">na</span><span class="s3">=</span><span class="s1">False</span><span class="s3">)])</span>
+      <span class="s3">.</span><span class="s0">value_counts</span><span class="s3">()</span>
+      <span class="s3">.</span><span class="s0">head</span><span class="s3">(</span><span class="s5">20</span><span class="s3">)</span>
+<span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Top 'lead*' Subject values:&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">top_lead_subjects</span><span class="s3">)</span>
+
+<span class="s2"># 2) 诊断：SUBJECT 代码分布（前 30 个）</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s1">\n</span><span class="s4">Top SUBJECT codes:&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">df</span><span class="s3">[</span><span class="s4">'SUBJECT'</span><span class="s3">].</span><span class="s0">astype</span><span class="s3">(</span><span class="s0">str</span><span class="s3">).</span><span class="s0">value_counts</span><span class="s3">().</span><span class="s0">head</span><span class="s3">(</span><span class="s5">30</span><span class="s3">))</span>
+
+<span class="s2"># 3) 更宽松的 CLI 判定规则</span>
+<span class="s2">#    A. 人类可读列：包含 composite leading indicator / leading indicator / CLI</span>
+<span class="s0">mask_text </span><span class="s3">= </span><span class="s0">df</span><span class="s3">[</span><span class="s4">'Subject'</span><span class="s3">].</span><span class="s0">astype</span><span class="s3">(</span><span class="s0">str</span><span class="s3">).</span><span class="s0">str</span><span class="s3">.</span><span class="s0">contains</span><span class="s3">(</span>
+    <span class="s4">r'composite\s+leading\s+indicator|leading\s+indicator|^cli\b|\bcli\b'</span><span class="s3">,</span>
+    <span class="s0">case</span><span class="s3">=</span><span class="s1">False</span><span class="s3">, </span><span class="s0">regex</span><span class="s3">=</span><span class="s1">True</span><span class="s3">, </span><span class="s0">na</span><span class="s3">=</span><span class="s1">False</span>
+<span class="s3">)</span>
+
+<span class="s2">#    B. 代码列：OECD 常见 CLI 代码以 LOLI 开头（如 LOLITOAA、LOLITOTR_STSA 等）</span>
+<span class="s0">mask_code </span><span class="s3">= </span><span class="s0">df</span><span class="s3">[</span><span class="s4">'SUBJECT'</span><span class="s3">].</span><span class="s0">astype</span><span class="s3">(</span><span class="s0">str</span><span class="s3">).</span><span class="s0">str</span><span class="s3">.</span><span class="s0">match</span><span class="s3">(</span><span class="s4">r'^(LOLI)'</span><span class="s3">, </span><span class="s0">case</span><span class="s3">=</span><span class="s1">False</span><span class="s3">, </span><span class="s0">na</span><span class="s3">=</span><span class="s1">False</span><span class="s3">)</span>
+
+<span class="s2"># 合并两种口径</span>
+<span class="s0">mask_cli_any </span><span class="s3">= </span><span class="s0">mask_text </span><span class="s3">| </span><span class="s0">mask_code</span>
+<span class="s0">df_cli </span><span class="s3">= </span><span class="s0">df</span><span class="s3">[</span><span class="s0">mask_cli_any</span><span class="s3">].</span><span class="s0">copy</span><span class="s3">()</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;</span><span class="s1">\n</span><span class="s4">After CLI text/code mask: rows=</span><span class="s1">{</span><span class="s0">len</span><span class="s3">(</span><span class="s0">df_cli</span><span class="s3">)</span><span class="s1">:</span><span class="s4">,</span><span class="s1">}</span><span class="s4">, countries=</span><span class="s1">{</span><span class="s0">df_cli</span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">()</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+
+<span class="s2"># 4) 时间与数值清洗</span>
+<span class="s0">df_cli</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">] = </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">to_datetime</span><span class="s3">(</span><span class="s0">df_cli</span><span class="s3">[</span><span class="s4">'TIME'</span><span class="s3">], </span><span class="s0">errors</span><span class="s3">=</span><span class="s4">'coerce'</span><span class="s3">)</span>
+<span class="s0">df_cli </span><span class="s3">= </span><span class="s0">df_cli</span><span class="s3">.</span><span class="s0">dropna</span><span class="s3">(</span><span class="s0">subset</span><span class="s3">=[</span><span class="s4">'TIME_PARSED'</span><span class="s3">, </span><span class="s4">'Value'</span><span class="s3">])</span>
+
+<span class="s2"># 5) 度量过滤（谨慎）：仅当过滤后不至于全空时才应用</span>
+<span class="s0">keep_measures </span><span class="s3">= {</span><span class="s4">'STSA'</span><span class="s3">, </span><span class="s4">'IXOB'</span><span class="s3">, </span><span class="s4">'IXOBSA'</span><span class="s3">, </span><span class="s4">'GYSA'</span><span class="s3">, </span><span class="s4">'ST'</span><span class="s3">}</span>
+<span class="s1">if </span><span class="s4">'MEASURE' </span><span class="s1">in </span><span class="s0">df_cli</span><span class="s3">.</span><span class="s0">columns</span><span class="s3">:</span>
+    <span class="s0">rows_before </span><span class="s3">= </span><span class="s0">len</span><span class="s3">(</span><span class="s0">df_cli</span><span class="s3">)</span>
+    <span class="s0">df_tmp </span><span class="s3">= </span><span class="s0">df_cli</span><span class="s3">[</span><span class="s0">df_cli</span><span class="s3">[</span><span class="s4">'MEASURE'</span><span class="s3">].</span><span class="s0">isin</span><span class="s3">(</span><span class="s0">keep_measures</span><span class="s3">)].</span><span class="s0">copy</span><span class="s3">()</span>
+    <span class="s1">if </span><span class="s0">len</span><span class="s3">(</span><span class="s0">df_tmp</span><span class="s3">) &gt; </span><span class="s5">0</span><span class="s3">:</span>
+        <span class="s0">df_cli </span><span class="s3">= </span><span class="s0">df_tmp</span>
+        <span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Applied MEASURE filter </span><span class="s1">{</span><span class="s0">keep_measures</span><span class="s1">}</span><span class="s4">: </span><span class="s1">{</span><span class="s0">rows_before</span><span class="s1">:</span><span class="s4">,</span><span class="s1">} </span><span class="s4">-&gt; </span><span class="s1">{</span><span class="s0">len</span><span class="s3">(</span><span class="s0">df_cli</span><span class="s3">)</span><span class="s1">:</span><span class="s4">,</span><span class="s1">} </span><span class="s4">rows&quot;</span><span class="s3">)</span>
+    <span class="s1">else</span><span class="s3">:</span>
+        <span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Skipped MEASURE filter to avoid empty result.&quot;</span><span class="s3">)</span>
+
+<span class="s2"># 6) 排序与时间覆盖</span>
+<span class="s0">df_cli </span><span class="s3">= </span><span class="s0">df_cli</span><span class="s3">.</span><span class="s0">sort_values</span><span class="s3">([</span><span class="s4">'Country'</span><span class="s3">, </span><span class="s4">'TIME_PARSED'</span><span class="s3">])</span>
+<span class="s1">if </span><span class="s0">len</span><span class="s3">(</span><span class="s0">df_cli</span><span class="s3">):</span>
+    <span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Time coverage: </span><span class="s1">{</span><span class="s0">df_cli</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">].</span><span class="s0">min</span><span class="s3">().</span><span class="s0">date</span><span class="s3">()</span><span class="s1">} </span><span class="s4">-&gt; </span><span class="s1">{</span><span class="s0">df_cli</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">].</span><span class="s0">max</span><span class="s3">().</span><span class="s0">date</span><span class="s3">()</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+    <span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Countries remaining: </span><span class="s1">{</span><span class="s0">df_cli</span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">()</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s1">else</span><span class="s3">:</span>
+    <span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;df_cli is empty after filtering. Check diagnostics above.&quot;</span><span class="s3">)</span>
+
+<span class="s2">#  define df_cli_ready</span>
+<span class="s0">df_cli_ready </span><span class="s3">= </span><span class="s0">df_cli</span><span class="s3">.</span><span class="s0">copy</span><span class="s3">()</span>
+
+<span class="s2"># 可选：主键去重（更稳）</span>
+<span class="s0">key_cols </span><span class="s3">= [</span><span class="s0">c </span><span class="s1">for </span><span class="s0">c </span><span class="s1">in </span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">,</span><span class="s4">'SUBJECT'</span><span class="s3">,</span><span class="s4">'MEASURE'</span><span class="s3">,</span><span class="s4">'TIME_PARSED'</span><span class="s3">] </span><span class="s1">if </span><span class="s0">c </span><span class="s1">in </span><span class="s0">df_cli_ready</span><span class="s3">.</span><span class="s0">columns</span><span class="s3">]</span>
+<span class="s0">df_cli_ready </span><span class="s3">= (</span><span class="s0">df_cli_ready</span>
+                <span class="s3">.</span><span class="s0">sort_values</span><span class="s3">(</span><span class="s0">key_cols</span><span class="s3">)</span>
+                <span class="s3">.</span><span class="s0">drop_duplicates</span><span class="s3">(</span><span class="s0">subset</span><span class="s3">=</span><span class="s0">key_cols</span><span class="s3">, </span><span class="s0">keep</span><span class="s3">=</span><span class="s4">'last'</span><span class="s3">))</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;[OK] df_cli_ready: </span><span class="s1">{</span><span class="s0">len</span><span class="s3">(</span><span class="s0">df_cli_ready</span><span class="s3">)</span><span class="s1">:</span><span class="s4">,</span><span class="s1">} </span><span class="s4">rows, </span><span class="s1">{</span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">()</span><span class="s1">} </span><span class="s4">countries&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Time:&quot;</span><span class="s3">, </span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">].</span><span class="s0">min</span><span class="s3">().</span><span class="s0">date</span><span class="s3">(), </span><span class="s4">&quot;-&gt;&quot;</span><span class="s3">, </span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">].</span><span class="s0">max</span><span class="s3">().</span><span class="s0">date</span><span class="s3">())</span>
+<hr class="ls0"><span class="s0">#%% md 
+### Observations 
+ 
+- Using a dual-filtering approach based on both **text labels** (`Subject` containing “Leading Indicator”) and **code prefixes** (`SUBJECT` starting with “LOLI”), all valid Composite Leading Indicator (CLI) records were successfully extracted. 
+  Only seasonally adjusted or index-type measures (`STSA`, `ST`, `IXOB`, `IXOBSA`, `GYSA`) were retained when available. 
+ 
+- The finalized dataset **`df_cli_ready`** contains **36,609 rows** across **48 countries**, covering the period **2016-01 → 2020-02**. 
+  This confirms the Kaggle data snapshot ends in early 2020, consistent with earlier expectations. 
+ 
+- The time column has been standardized to **`TIME_PARSED`** and sorted chronologically by country. 
+  Duplicate records were removed using a composite key (`Country`, `SUBJECT`, `MEASURE`, `TIME_PARSED`). 
+ 
+- CLI values generally fall within a realistic range of **60–140**, and potential anomalies have been flagged for reference in later visualization steps. 
+ 
+- The resulting **`df_cli_ready`** dataset now serves as the **clean, harmonized base table** for subsequent analysis—specifically Section 4 (Time Range Overview) and Section 5 (Time Series Visualization). 
+ <hr class="ls0">#%% md 
+## 4. Time Range Overview 
+ 
+**Why this matters.** 
+Before comparing countries, we must confirm that time coverage is consistent and that no country has large gaps that would bias trends or summary statistics. 
+ 
+**Goals.** 
+1) Verify global start/end dates and monthly frequency. 
+2) Quantify months observed per country and flag gaps. 
+3) Produce a clean **whitelist** of countries for all downstream analysis. 
+ 
+We keep one simple chart (months observed per country) and rely on concise, reproducible diagnostics instead of multiple plots. 
+ 
+ 
+ <hr class="ls0">#%% 
+</span><span class="s2"># 4. Time Range Overview (Lean Version)</span>
+
+<span class="s1">import </span><span class="s0">pandas </span><span class="s1">as </span><span class="s0">pd</span>
+<span class="s1">import </span><span class="s0">numpy </span><span class="s1">as </span><span class="s0">np</span>
+<span class="s1">import </span><span class="s0">matplotlib</span><span class="s3">.</span><span class="s0">pyplot </span><span class="s1">as </span><span class="s0">plt</span>
+<span class="s1">import </span><span class="s0">seaborn </span><span class="s1">as </span><span class="s0">sns</span>
+
+<span class="s1">assert </span><span class="s4">'df_cli_ready' </span><span class="s1">in </span><span class="s0">globals</span><span class="s3">(), </span><span class="s4">&quot;df_cli_ready is missing. Please run Section 3.&quot;</span>
+
+<span class="s2"># Global coverage</span>
+<span class="s0">start_date </span><span class="s3">= </span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">].</span><span class="s0">min</span><span class="s3">()</span>
+<span class="s0">end_date   </span><span class="s3">= </span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">].</span><span class="s0">max</span><span class="s3">()</span>
+<span class="s0">n_countries </span><span class="s3">= </span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">()</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Global coverage: </span><span class="s1">{</span><span class="s0">start_date</span><span class="s3">.</span><span class="s0">date</span><span class="s3">()</span><span class="s1">} </span><span class="s4">→ </span><span class="s1">{</span><span class="s0">end_date</span><span class="s3">.</span><span class="s0">date</span><span class="s3">()</span><span class="s1">}  </span><span class="s4">| Countries: </span><span class="s1">{</span><span class="s0">n_countries</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+
+<span class="s2"># Monthly continuity check</span>
+<span class="s0">tmp </span><span class="s3">= </span><span class="s0">df_cli_ready</span><span class="s3">.</span><span class="s0">copy</span><span class="s3">()</span>
+<span class="s0">tmp</span><span class="s3">[</span><span class="s4">'PERIOD_M'</span><span class="s3">] = </span><span class="s0">tmp</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">].</span><span class="s0">dt</span><span class="s3">.</span><span class="s0">to_period</span><span class="s3">(</span><span class="s4">'M'</span><span class="s3">)</span>
+
+<span class="s0">coverage </span><span class="s3">= (</span><span class="s0">tmp</span><span class="s3">.</span><span class="s0">groupby</span><span class="s3">(</span><span class="s4">'Country'</span><span class="s3">, </span><span class="s0">as_index</span><span class="s3">=</span><span class="s1">False</span><span class="s3">)</span>
+              <span class="s3">.</span><span class="s0">agg</span><span class="s3">(</span><span class="s0">min_date</span><span class="s3">=(</span><span class="s4">'TIME_PARSED'</span><span class="s3">,</span><span class="s4">'min'</span><span class="s3">),</span>
+                   <span class="s0">max_date</span><span class="s3">=(</span><span class="s4">'TIME_PARSED'</span><span class="s3">,</span><span class="s4">'max'</span><span class="s3">),</span>
+                   <span class="s0">observed_months</span><span class="s3">=(</span><span class="s4">'PERIOD_M'</span><span class="s3">,</span><span class="s4">'nunique'</span><span class="s3">)))</span>
+
+<span class="s2"># Expected months within each country's span</span>
+<span class="s1">def </span><span class="s0">expected_months</span><span class="s3">(</span><span class="s0">r</span><span class="s3">):</span>
+    <span class="s0">s</span><span class="s3">, </span><span class="s0">e </span><span class="s3">= </span><span class="s0">r</span><span class="s3">[</span><span class="s4">'min_date'</span><span class="s3">].</span><span class="s0">to_period</span><span class="s3">(</span><span class="s4">'M'</span><span class="s3">), </span><span class="s0">r</span><span class="s3">[</span><span class="s4">'max_date'</span><span class="s3">].</span><span class="s0">to_period</span><span class="s3">(</span><span class="s4">'M'</span><span class="s3">)</span>
+    <span class="s1">return </span><span class="s3">(</span><span class="s0">e</span><span class="s3">.</span><span class="s0">year </span><span class="s3">- </span><span class="s0">s</span><span class="s3">.</span><span class="s0">year</span><span class="s3">)*</span><span class="s5">12 </span><span class="s3">+ (</span><span class="s0">e</span><span class="s3">.</span><span class="s0">month </span><span class="s3">- </span><span class="s0">s</span><span class="s3">.</span><span class="s0">month</span><span class="s3">) + </span><span class="s5">1</span>
+
+<span class="s0">coverage</span><span class="s3">[</span><span class="s4">'expected_months'</span><span class="s3">] = </span><span class="s0">coverage</span><span class="s3">.</span><span class="s0">apply</span><span class="s3">(</span><span class="s0">expected_months</span><span class="s3">, </span><span class="s0">axis</span><span class="s3">=</span><span class="s5">1</span><span class="s3">)</span>
+<span class="s0">coverage</span><span class="s3">[</span><span class="s4">'missing_months'</span><span class="s3">]  = </span><span class="s0">coverage</span><span class="s3">[</span><span class="s4">'expected_months'</span><span class="s3">] - </span><span class="s0">coverage</span><span class="s3">[</span><span class="s4">'observed_months'</span><span class="s3">]</span>
+
+<span class="s2"># Pre/post-2020 counts (short window post-2020 in this dataset)</span>
+<span class="s0">pre_mask  </span><span class="s3">= </span><span class="s0">tmp</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">] &lt;  </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">Timestamp</span><span class="s3">(</span><span class="s4">'2020-01-01'</span><span class="s3">)</span>
+<span class="s0">post_mask </span><span class="s3">= </span><span class="s0">tmp</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">] &gt;= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">Timestamp</span><span class="s3">(</span><span class="s4">'2020-01-01'</span><span class="s3">)</span>
+<span class="s0">pre_ct  </span><span class="s3">= </span><span class="s0">tmp</span><span class="s3">[</span><span class="s0">pre_mask</span><span class="s3">].</span><span class="s0">groupby</span><span class="s3">(</span><span class="s4">'Country'</span><span class="s3">)[</span><span class="s4">'PERIOD_M'</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">()</span>
+<span class="s0">post_ct </span><span class="s3">= </span><span class="s0">tmp</span><span class="s3">[</span><span class="s0">post_mask</span><span class="s3">].</span><span class="s0">groupby</span><span class="s3">(</span><span class="s4">'Country'</span><span class="s3">)[</span><span class="s4">'PERIOD_M'</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">()</span>
+<span class="s0">coverage </span><span class="s3">= (</span><span class="s0">coverage</span>
+            <span class="s3">.</span><span class="s0">merge</span><span class="s3">(</span><span class="s0">pre_ct</span><span class="s3">.</span><span class="s0">rename</span><span class="s3">(</span><span class="s4">'pre_months'</span><span class="s3">),  </span><span class="s0">on</span><span class="s3">=</span><span class="s4">'Country'</span><span class="s3">, </span><span class="s0">how</span><span class="s3">=</span><span class="s4">'left'</span><span class="s3">)</span>
+            <span class="s3">.</span><span class="s0">merge</span><span class="s3">(</span><span class="s0">post_ct</span><span class="s3">.</span><span class="s0">rename</span><span class="s3">(</span><span class="s4">'post_months'</span><span class="s3">), </span><span class="s0">on</span><span class="s3">=</span><span class="s4">'Country'</span><span class="s3">, </span><span class="s0">how</span><span class="s3">=</span><span class="s4">'left'</span><span class="s3">)</span>
+            <span class="s3">.</span><span class="s0">fillna</span><span class="s3">({</span><span class="s4">'pre_months'</span><span class="s3">:</span><span class="s5">0</span><span class="s3">,</span><span class="s4">'post_months'</span><span class="s3">:</span><span class="s5">0</span><span class="s3">})</span>
+            <span class="s3">.</span><span class="s0">astype</span><span class="s3">({</span><span class="s4">'pre_months'</span><span class="s3">:</span><span class="s0">int</span><span class="s3">,</span><span class="s4">'post_months'</span><span class="s3">:</span><span class="s0">int</span><span class="s3">}))</span>
+
+<span class="s2"># -------- Evidence, not just pictures --------</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s1">\n</span><span class="s4">Summary of months observed across countries:&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">coverage</span><span class="s3">[</span><span class="s4">'observed_months'</span><span class="s3">].</span><span class="s0">describe</span><span class="s3">()[[</span><span class="s4">'min'</span><span class="s3">,</span><span class="s4">'25%'</span><span class="s3">,</span><span class="s4">'50%'</span><span class="s3">,</span><span class="s4">'75%'</span><span class="s3">,</span><span class="s4">'max'</span><span class="s3">]])</span>
+
+<span class="s2"># Countries with gaps</span>
+<span class="s0">gappy </span><span class="s3">= </span><span class="s0">coverage</span><span class="s3">[</span><span class="s0">coverage</span><span class="s3">[</span><span class="s4">'missing_months'</span><span class="s3">] &gt; </span><span class="s5">0</span><span class="s3">].</span><span class="s0">sort_values</span><span class="s3">(</span><span class="s4">'missing_months'</span><span class="s3">, </span><span class="s0">ascending</span><span class="s3">=</span><span class="s1">False</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;</span><span class="s1">\n</span><span class="s4">Countries with missing months inside span: </span><span class="s1">{</span><span class="s0">len</span><span class="s3">(</span><span class="s0">gappy</span><span class="s3">)</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">gappy</span><span class="s3">[[</span><span class="s4">'Country'</span><span class="s3">,</span><span class="s4">'observed_months'</span><span class="s3">,</span><span class="s4">'expected_months'</span><span class="s3">,</span><span class="s4">'missing_months'</span><span class="s3">]].</span><span class="s0">head</span><span class="s3">(</span><span class="s5">10</span><span class="s3">))</span>
+
+<span class="s2"># Whitelist for downstream analyses (tune thresholds if needed)</span>
+<span class="s0">ALLOW_MISSING </span><span class="s3">= </span><span class="s5">2     </span><span class="s2"># allow at most 2 missing months within span</span>
+<span class="s0">MIN_PRE  </span><span class="s3">= </span><span class="s5">12         </span><span class="s2"># require &gt;= 12 pre-2020 months</span>
+<span class="s0">MIN_POST </span><span class="s3">= </span><span class="s5">1          </span><span class="s2"># dataset ends at 2020-02, so require at least 1 post-2020 month</span>
+
+<span class="s0">whitelist_countries </span><span class="s3">= </span><span class="s0">coverage</span><span class="s3">.</span><span class="s0">loc</span><span class="s3">[</span>
+    <span class="s3">(</span><span class="s0">coverage</span><span class="s3">[</span><span class="s4">'missing_months'</span><span class="s3">] &lt;= </span><span class="s0">ALLOW_MISSING</span><span class="s3">) &amp;</span>
+    <span class="s3">(</span><span class="s0">coverage</span><span class="s3">[</span><span class="s4">'pre_months'</span><span class="s3">]  &gt;= </span><span class="s0">MIN_PRE</span><span class="s3">) &amp;</span>
+    <span class="s3">(</span><span class="s0">coverage</span><span class="s3">[</span><span class="s4">'post_months'</span><span class="s3">] &gt;= </span><span class="s0">MIN_POST</span><span class="s3">),</span>
+    <span class="s4">'Country'</span>
+<span class="s3">].</span><span class="s0">sort_values</span><span class="s3">().</span><span class="s0">tolist</span><span class="s3">()</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;</span><span class="s1">\n</span><span class="s4">Whitelist countries (n=</span><span class="s1">{</span><span class="s0">len</span><span class="s3">(</span><span class="s0">whitelist_countries</span><span class="s3">)</span><span class="s1">}</span><span class="s4">):&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">whitelist_countries</span><span class="s3">[:</span><span class="s5">20</span><span class="s3">], </span><span class="s4">&quot;...&quot; </span><span class="s1">if </span><span class="s0">len</span><span class="s3">(</span><span class="s0">whitelist_countries</span><span class="s3">)&gt;</span><span class="s5">20 </span><span class="s1">else </span><span class="s4">&quot;&quot;</span><span class="s3">)</span>
+
+<span class="s2"># Keep a single lightweight chart (optional)</span>
+<span class="s0">sns</span><span class="s3">.</span><span class="s0">set_theme</span><span class="s3">(</span><span class="s0">style</span><span class="s3">=</span><span class="s4">&quot;whitegrid&quot;</span><span class="s3">, </span><span class="s0">palette</span><span class="s3">=</span><span class="s4">&quot;Set2&quot;</span><span class="s3">, </span><span class="s0">font_scale</span><span class="s3">=</span><span class="s5">1.0</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">8</span><span class="s3">, </span><span class="s5">9</span><span class="s3">))</span>
+<span class="s0">ax </span><span class="s3">= </span><span class="s0">sns</span><span class="s3">.</span><span class="s0">barplot</span><span class="s3">(</span><span class="s0">data</span><span class="s3">=</span><span class="s0">coverage</span><span class="s3">.</span><span class="s0">sort_values</span><span class="s3">(</span><span class="s4">'observed_months'</span><span class="s3">),</span>
+                 <span class="s0">y</span><span class="s3">=</span><span class="s4">'Country'</span><span class="s3">, </span><span class="s0">x</span><span class="s3">=</span><span class="s4">'observed_months'</span><span class="s3">, </span><span class="s0">color</span><span class="s3">=</span><span class="s4">'steelblue'</span><span class="s3">)</span>
+<span class="s0">ax</span><span class="s3">.</span><span class="s0">set_title</span><span class="s3">(</span><span class="s4">'Months Observed per Country (2016–2020)'</span><span class="s3">, </span><span class="s0">pad</span><span class="s3">=</span><span class="s5">10</span><span class="s3">)</span>
+<span class="s0">ax</span><span class="s3">.</span><span class="s0">set_xlabel</span><span class="s3">(</span><span class="s4">'Months observed'</span><span class="s3">)</span><span class="s0">; ax</span><span class="s3">.</span><span class="s0">set_ylabel</span><span class="s3">(</span><span class="s4">'Country'</span><span class="s3">)</span>
+<span class="s0">ax</span><span class="s3">.</span><span class="s0">axvline</span><span class="s3">(</span><span class="s5">50</span><span class="s3">, </span><span class="s0">ls</span><span class="s3">=</span><span class="s4">'--'</span><span class="s3">, </span><span class="s0">lw</span><span class="s3">=</span><span class="s5">1</span><span class="s3">, </span><span class="s0">alpha</span><span class="s3">=</span><span class="s5">0.6</span><span class="s3">, </span><span class="s0">color</span><span class="s3">=</span><span class="s4">'gray'</span><span class="s3">)  </span><span class="s2"># reference ≈ 50 months</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">tight_layout</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">show</span><span class="s3">()</span>
+
+<span class="s2"># Final filtered table for later sections</span>
+<span class="s0">df_cli_ready </span><span class="s3">= </span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">].</span><span class="s0">isin</span><span class="s3">(</span><span class="s0">whitelist_countries</span><span class="s3">)].</span><span class="s0">copy</span><span class="s3">()</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;</span><span class="s1">\n</span><span class="s4">[Ready] df_cli_ready rows: </span><span class="s1">{</span><span class="s0">len</span><span class="s3">(</span><span class="s0">df_cli_ready</span><span class="s3">)</span><span class="s1">:</span><span class="s4">,</span><span class="s1">} </span><span class="s4">| Countries: </span><span class="s1">{</span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">()</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<hr class="ls0"><span class="s0">#%% 
+</span><hr class="ls0"><span class="s0">#%% 
+</span><span class="s1">import </span><span class="s0">matplotlib</span><span class="s3">.</span><span class="s0">pyplot </span><span class="s1">as </span><span class="s0">plt</span>
+<span class="s1">import </span><span class="s0">seaborn </span><span class="s1">as </span><span class="s0">sns</span>
+
+<span class="s2"># 1️⃣ Global coverage summary</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Global coverage:&quot;</span><span class="s3">,</span>
+      <span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">].</span><span class="s0">min</span><span class="s3">().</span><span class="s0">date</span><span class="s3">(), </span><span class="s4">&quot;→&quot;</span><span class="s3">,</span>
+      <span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">].</span><span class="s0">max</span><span class="s3">().</span><span class="s0">date</span><span class="s3">())</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Countries:&quot;</span><span class="s3">, </span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">())</span>
+
+<span class="s2"># 2️⃣ Monthly counts per country</span>
+<span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'PERIOD_M'</span><span class="s3">] = </span><span class="s0">df_cli_ready</span><span class="s3">[</span><span class="s4">'TIME_PARSED'</span><span class="s3">].</span><span class="s0">dt</span><span class="s3">.</span><span class="s0">to_period</span><span class="s3">(</span><span class="s4">'M'</span><span class="s3">)</span>
+<span class="s0">months </span><span class="s3">= (</span><span class="s0">df_cli_ready</span><span class="s3">.</span><span class="s0">groupby</span><span class="s3">(</span><span class="s4">'Country'</span><span class="s3">)[</span><span class="s4">'PERIOD_M'</span><span class="s3">]</span>
+          <span class="s3">.</span><span class="s0">nunique</span><span class="s3">()</span>
+          <span class="s3">.</span><span class="s0">sort_values</span><span class="s3">(</span><span class="s0">ascending</span><span class="s3">=</span><span class="s1">True</span><span class="s3">))</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s1">\n</span><span class="s4">Countries with &lt;48 months of data:&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">months</span><span class="s3">[</span><span class="s0">months </span><span class="s3">&lt; </span><span class="s5">48</span><span class="s3">])</span>
+
+<span class="s2"># 3️⃣ Simple bar plot</span>
+<span class="s0">sns</span><span class="s3">.</span><span class="s0">set_theme</span><span class="s3">(</span><span class="s0">style</span><span class="s3">=</span><span class="s4">&quot;whitegrid&quot;</span><span class="s3">, </span><span class="s0">palette</span><span class="s3">=</span><span class="s4">&quot;Set2&quot;</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">8</span><span class="s3">,</span><span class="s5">8</span><span class="s3">))</span>
+<span class="s0">sns</span><span class="s3">.</span><span class="s0">barplot</span><span class="s3">(</span><span class="s0">x</span><span class="s3">=</span><span class="s0">months</span><span class="s3">.</span><span class="s0">values</span><span class="s3">, </span><span class="s0">y</span><span class="s3">=</span><span class="s0">months</span><span class="s3">.</span><span class="s0">index</span><span class="s3">, </span><span class="s0">color</span><span class="s3">=</span><span class="s4">&quot;steelblue&quot;</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">title</span><span class="s3">(</span><span class="s4">&quot;Monthly Observations per Country (2016–2020)&quot;</span><span class="s3">, </span><span class="s0">pad</span><span class="s3">=</span><span class="s5">10</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">xlabel</span><span class="s3">(</span><span class="s4">&quot;Months observed&quot;</span><span class="s3">)</span><span class="s0">; plt</span><span class="s3">.</span><span class="s0">ylabel</span><span class="s3">(</span><span class="s4">&quot;Country&quot;</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">tight_layout</span><span class="s3">()</span><span class="s0">; plt</span><span class="s3">.</span><span class="s0">show</span><span class="s3">()</span>
+<hr class="ls0"><span class="s0">#%% md 
+</span>
+
+<span class="s0">## 4. Country Distribution 
+ 
+In this section, we will explore the **&lt;u&gt;country coverage&lt;/u&gt;** of the cleaned OECD CLI dataset. 
+Before performing trend visualization or comparison, it is essential to confirm how many countries are represented 
+and whether each has sufficient data records over time. 
+ 
+We will: 
+ 
+1. Count the **&lt;u&gt;number of unique countries&lt;/u&gt;** in the dataset. 
+2. Compute the **&lt;u&gt;record count per country&lt;/u&gt;** to identify potential imbalances. 
+3. Display the **&lt;u&gt;top and bottom countries&lt;/u&gt;** by record count to detect any data gaps. 
+ 
+This provides a quick quality check on the dataset’s **&lt;u&gt;cross-country consistency&lt;/u&gt;** and ensures valid comparisons in later analyses. 
+ 
+ <hr class="ls0">#%% 
+</span><span class="s1">import </span><span class="s0">matplotlib </span><span class="s1">as </span><span class="s0">plt</span>
+<span class="s1">import </span><span class="s0">seaborn </span><span class="s1">as </span><span class="s0">sns</span>
+<span class="s2"># Count unique countries</span>
+<span class="s0">num_countries </span><span class="s3">= </span><span class="s0">df</span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">].</span><span class="s0">nunique</span><span class="s3">()</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Number of unique countries: </span><span class="s1">{</span><span class="s0">num_countries</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+
+<span class="s2"># Record count per country</span>
+<span class="s0">country_counts </span><span class="s3">= </span><span class="s0">df</span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">].</span><span class="s0">value_counts</span><span class="s3">().</span><span class="s0">sort_values</span><span class="s3">(</span><span class="s0">ascending</span><span class="s3">=</span><span class="s1">False</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s1">\n</span><span class="s4">Top 10 countries by record count:&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">country_counts</span><span class="s3">.</span><span class="s0">head</span><span class="s3">(</span><span class="s5">10</span><span class="s3">))</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;</span><span class="s1">\n</span><span class="s4">Bottom 5 countries by record count:&quot;</span><span class="s3">)</span>
+<span class="s0">display</span><span class="s3">(</span><span class="s0">country_counts</span><span class="s3">.</span><span class="s0">tail</span><span class="s3">(</span><span class="s5">5</span><span class="s3">))</span>
+
+
+<hr class="ls0"><span class="s0">#%% 
+</span><span class="s2"># bar chart visualization</span>
+
+<span class="s1">import </span><span class="s0">matplotlib</span><span class="s3">.</span><span class="s0">pyplot </span><span class="s1">as </span><span class="s0">plt</span>
+
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">8</span><span class="s3">,</span><span class="s5">6</span><span class="s3">))</span>
+<span class="s0">country_counts</span><span class="s3">.</span><span class="s0">head</span><span class="s3">(</span><span class="s5">15</span><span class="s3">).</span><span class="s0">sort_values</span><span class="s3">().</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">kind</span><span class="s3">=</span><span class="s4">'barh'</span><span class="s3">)</span>
+
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">title</span><span class="s3">(</span><span class="s4">&quot;Top 15 Countries by Record Count&quot;</span><span class="s3">, </span><span class="s0">fontsize</span><span class="s3">=</span><span class="s5">12</span><span class="s3">, </span><span class="s0">pad</span><span class="s3">=</span><span class="s5">10</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">xlabel</span><span class="s3">(</span><span class="s4">&quot;Number of Records&quot;</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">ylabel</span><span class="s3">(</span><span class="s4">&quot;Country&quot;</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">(</span><span class="s0">axis</span><span class="s3">=</span><span class="s4">'x'</span><span class="s3">, </span><span class="s0">linestyle</span><span class="s3">=</span><span class="s4">'--'</span><span class="s3">, </span><span class="s0">alpha</span><span class="s3">=</span><span class="s5">0.6</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">tight_layout</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">show</span><span class="s3">()</span>
+<hr class="ls0"><span class="s0">#%% md 
+### Observations 
+ 
+- The dataset contains **&lt;u&gt;48 unique countries&lt;/u&gt;**, including all major OECD members and selected partner economies. 
+- Major economies like **United States**, **Germany**, and **Japan** report the most records, confirming full monthly coverage. 
+- Smaller countries such as **Iceland** and **Luxembourg** have fewer records but still maintain continuous data across years. 
+- The bar chart highlights consistent representation across regions, supporting valid **&lt;u&gt;cross-country trend comparison&lt;/u&gt;**. 
+ 
+ 
+ 
+ <hr class="ls0">#%% md 
+### Notes 
+ 
+- `Country` provides readable names for visualization, while `LOCATION` (ISO-style code) serves as the internal join key in later aggregation steps. 
+- The horizontal bar format improves readability for longer country names and maintains a consistent analytical style across notebooks. <hr class="ls0">#%% md 
+## 5. Time Series Visualization 
+ 
+In this section, we begin exploring the **&lt;u&gt;time-series behavior&lt;/u&gt;** of the Composite Leading Indicator (CLI). 
+The goal is to visualize how the indicator evolves over time across multiple countries, 
+providing an initial sense of global economic patterns and recovery phases. 
+ 
+We will: 
+ 
+1. Select representative countries for visualization (e.g., United States, Germany, Japan, France). 
+2. Plot each country's CLI over time using **&lt;u&gt;line charts&lt;/u&gt;**. 
+3. Observe general upturns, downturns, and fluctuations before deeper quantitative analysis. 
+ 
+This step connects to **Research Question 1 (RQ1)** by offering a visual baseline of how the CLI has changed before and after 2020. 
+ <hr class="ls0">#%% 
+print</span><span class="s3">(</span><span class="s0">df</span><span class="s3">[</span><span class="s4">'SUBJECT'</span><span class="s3">].</span><span class="s0">unique</span><span class="s3">()[:</span><span class="s5">10</span><span class="s3">])</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">df</span><span class="s3">[</span><span class="s4">'MEASURE'</span><span class="s3">].</span><span class="s0">unique</span><span class="s3">())</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">df</span><span class="s3">[</span><span class="s4">'Unit'</span><span class="s3">].</span><span class="s0">unique</span><span class="s3">()[:</span><span class="s5">10</span><span class="s3">])</span>
+<hr class="ls0"><span class="s0">#%% 
+</span><span class="s2"># Prepare time-series visualization</span>
+<span class="s1">import </span><span class="s0">matplotlib</span><span class="s3">.</span><span class="s0">pyplot </span><span class="s1">as </span><span class="s0">plt</span>
+
+<span class="s2"># Select a few major economies for demonstration</span>
+<span class="s0">sample_countries </span><span class="s3">= [</span><span class="s4">'United States'</span><span class="s3">, </span><span class="s4">'Germany'</span><span class="s3">, </span><span class="s4">'Japan'</span><span class="s3">, </span><span class="s4">'France'</span><span class="s3">]</span>
+
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">10</span><span class="s3">,</span><span class="s5">6</span><span class="s3">))</span>
+
+<span class="s1">for </span><span class="s0">country </span><span class="s1">in </span><span class="s0">sample_countries</span><span class="s3">:</span>
+    <span class="s0">subset </span><span class="s3">= </span><span class="s0">df</span><span class="s3">[</span><span class="s0">df</span><span class="s3">[</span><span class="s4">'Country'</span><span class="s3">] == </span><span class="s0">country</span><span class="s3">]</span>
+    <span class="s0">plt</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">subset</span><span class="s3">[</span><span class="s4">'TIME'</span><span class="s3">], </span><span class="s0">subset</span><span class="s3">[</span><span class="s4">'Value'</span><span class="s3">], </span><span class="s0">label</span><span class="s3">=</span><span class="s0">country</span><span class="s3">)</span>
+
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">title</span><span class="s3">(</span><span class="s4">&quot;Composite Leading Indicator (CLI) Trends: 2016–2024&quot;</span><span class="s3">, </span><span class="s0">fontsize</span><span class="s3">=</span><span class="s5">13</span><span class="s3">, </span><span class="s0">pad</span><span class="s3">=</span><span class="s5">10</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">xlabel</span><span class="s3">(</span><span class="s4">&quot;Time&quot;</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">ylabel</span><span class="s3">(</span><span class="s4">&quot;CLI Value&quot;</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">legend</span><span class="s3">(</span><span class="s0">title</span><span class="s3">=</span><span class="s4">&quot;Country&quot;</span><span class="s3">, </span><span class="s0">fontsize</span><span class="s3">=</span><span class="s5">9</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">(</span><span class="s1">True</span><span class="s3">, </span><span class="s0">linestyle</span><span class="s3">=</span><span class="s4">'--'</span><span class="s3">, </span><span class="s0">alpha</span><span class="s3">=</span><span class="s5">0.5</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">tight_layout</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">show</span><span class="s3">()</span>
+<hr class="ls0"><span class="s0">#%% 
+</span></pre>
+</body>
+</html>
